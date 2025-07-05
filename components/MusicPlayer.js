@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, X, Download, Share2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, X, Download, Share2, Check } from 'lucide-react';
 
 // Music configuration - easy to change
 const MUSIC_CONFIG = {
   title: 'пачка сигарет - instrumental',
   artist: 'operra, verana',
-  audioSrc: '/assets/audio.mp3',
-  thumbnailSrc: '/assets/thumbnail.png',
+  audioSrc: '../assets/audio.mp3',
+  thumbnailSrc: '../assets/thumbnail.jpg',
+  spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw',
   defaultVolume: 50
 };
 
@@ -17,6 +18,7 @@ export default function MusicPlayer() {
   const [volume, setVolume] = useState(MUSIC_CONFIG.defaultVolume);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showCopiedNotification, setShowCopiedNotification] = useState(false);
   const audioRef = useRef(null);
 
   // Audio player controls
@@ -122,19 +124,16 @@ export default function MusicPlayer() {
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: MUSIC_CONFIG.title,
-          text: `Listen to "${MUSIC_CONFIG.title}" by ${MUSIC_CONFIG.artist}`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(`${MUSIC_CONFIG.title} by ${MUSIC_CONFIG.artist}`);
+    try {
+      await navigator.clipboard.writeText(MUSIC_CONFIG.spotifyUrl);
+      setShowCopiedNotification(true);
+      
+      // Hide notification after 2 seconds
+      setTimeout(() => {
+        setShowCopiedNotification(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
     }
   };
 
@@ -285,6 +284,14 @@ export default function MusicPlayer() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Copied to Clipboard Notification */}
+      {showCopiedNotification && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 border border-zinc-800/30 rounded-lg px-4 py-2 flex items-center gap-2 z-50 animate-pulse">
+          <Check size={16} className="text-green-400" />
+          <span className="text-sm">Copied to clipboard</span>
         </div>
       )}
     </>
