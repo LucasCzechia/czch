@@ -27,7 +27,7 @@ body {
 .font-proggy {
   font-family: 'ProggyTiny', 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
   font-weight: normal;
-  font-size: 3rem;
+  font-size: 4rem;
   line-height: 1;
   letter-spacing: normal;
   text-rendering: optimizeSpeed;
@@ -38,7 +38,7 @@ body {
 
 @media (max-width: 640px) {
   .font-proggy {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
   }
 }
 .backdrop-blur-sm {
