@@ -7,7 +7,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6">
+    <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6">
       <ParticleBackground />
       
       <div className="w-full max-w-md glass-card overflow-visible relative z-10">
@@ -41,7 +41,7 @@ export default function Home() {
         <div className="p-4">
           {/* Main Header */}
           <div className="mb-6">
-            <h1 className="text-5xl mb-0 font-mono leading-none">czch</h1>
+            <h1 className="font-proggy mb-0">czch</h1>
             <p className="text-gray-400 text-xs leading-none">
               full stack developer specializing in modern web technologies
             </p>
