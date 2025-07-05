@@ -68,7 +68,7 @@ export default function MusicPlayer() {
       <p className="text-xs text-gray-400 mb-1">
         currently in rotation — a personal collection of music i've been listening to lately
       </p>
-      <div className="space-y-2 p-3 border border-zinc-800/30 rounded hover:border-zinc-700/30 transition-colors">
+      <div className="space-y-2 p-3 music-card">
         <div className="flex items-center gap-2">
           <div className="cursor-pointer">
             <img 
