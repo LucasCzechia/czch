@@ -3,6 +3,16 @@ import { useState, useEffect } from 'react';
 export default function DiscordStatus({ userId }) {
   const [discordData, setDiscordData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  // Update current time every second for real-time progress bars
+  useEffect(() => {
+    const timeInterval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(timeInterval);
+  }, []);
 
   useEffect(() => {
     const fetchDiscordStatus = async () => {
@@ -10,7 +20,13 @@ export default function DiscordStatus({ userId }) {
         const response = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
         const data = await response.json();
         if (data.success) {
-          setDiscordData(data.data);
+          setDiscordData(prevData => {
+            // Only update if data actually changed to prevent unnecessary re-renders
+            if (JSON.stringify(prevData) !== JSON.stringify(data.data)) {
+              return data.data;
+            }
+            return prevData;
+          });
         }
         setLoading(false);
       } catch (error) {
@@ -20,7 +36,7 @@ export default function DiscordStatus({ userId }) {
     };
 
     fetchDiscordStatus();
-    const interval = setInterval(fetchDiscordStatus, 30000); // Update every 30 seconds
+    const interval = setInterval(fetchDiscordStatus, 1000); // Update every second
 
     return () => clearInterval(interval);
   }, [userId]);
@@ -134,13 +150,13 @@ export default function DiscordStatus({ userId }) {
               </div>
               <div className="flex items-center gap-1 mt-1">
                 <span className="text-[0.7rem] text-gray-500">
-                  {formatElapsedTime(discordData.spotify?.timestamps?.start)}
+                  {formatTime((currentTime - discordData.spotify?.timestamps?.start) / 1000)}
                 </span>
                 <div className="flex-1 bg-gray-800 rounded-full h-1">
                   <div 
                     className="bg-green-500 h-1 rounded-full" 
                     style={{
-                      width: `${Math.min(100, ((Date.now() - discordData.spotify?.timestamps?.start) / (discordData.spotify?.timestamps?.end - discordData.spotify?.timestamps?.start)) * 100)}%`
+                      width: `${Math.min(100, Math.max(0, ((currentTime - discordData.spotify?.timestamps?.start) / (discordData.spotify?.timestamps?.end - discordData.spotify?.timestamps?.start)) * 100))}%`
                     }}
                   ></div>
                 </div>
@@ -182,7 +198,7 @@ export default function DiscordStatus({ userId }) {
               </div>
               {activity.timestamps?.start && (
                 <div className="text-gray-500 text-[0.7rem] mt-1">
-                  {formatElapsedTime(activity.timestamps.start)} elapsed
+                  {formatTime((currentTime - activity.timestamps.start) / 1000)} elapsed
                 </div>
               )}
             </div>
