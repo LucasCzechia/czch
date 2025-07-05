@@ -63,7 +63,7 @@ export default function DiscordStatus({ userId }) {
 
   if (loading) {
     return (
-      <div className="bg-zinc-900/20 rounded border border-zinc-800/30 mb-6 p-2">
+      <div className="status-card mb-6 p-2">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-zinc-800 rounded-full animate-pulse"></div>
           <div className="flex flex-col flex-1">
@@ -76,7 +76,7 @@ export default function DiscordStatus({ userId }) {
   }
 
   return (
-    <div className="bg-zinc-900/20 rounded border border-zinc-800/30 mb-6 p-2">
+    <div className="status-card mb-6 p-2">
       <div className="flex items-center gap-2">
         <div className="relative">
           <div className="relative">
