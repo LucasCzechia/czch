@@ -1,11 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react';
 
+// Music configuration - easy to change
+const MUSIC_CONFIG = {
+  title: 'пачка сигарет - instrumental',
+  artist: 'operra, verana',
+  audioSrc: '/assets/audio.mp3',
+  thumbnailSrc: '/assets/thumbnail.png',
+  defaultVolume: 50
+};
+
 export default function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(213); // 3:33 in seconds
-  const [volume, setVolume] = useState(50);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(MUSIC_CONFIG.defaultVolume);
+  const [isLoaded, setIsLoaded] = useState(false);
   const audioRef = useRef(null);
 
   // Audio player controls
@@ -15,27 +25,42 @@ export default function MusicPlayer() {
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const handleEnded = () => setIsPlaying(false);
-    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+      setIsLoaded(true);
+    };
+    const handleCanPlay = () => setIsLoaded(true);
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('canplay', handleCanPlay);
+
+    // Set initial volume
+    audio.volume = volume / 100;
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('canplay', handleCanPlay);
     };
-  }, []);
+  }, [volume]);
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     const audio = audioRef.current;
-    if (isPlaying) {
-      audio.pause();
-    } else {
-      audio.play().catch(console.error);
+    if (!audio || !isLoaded) return;
+
+    try {
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        await audio.play();
+      }
+      setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Error playing audio:', error);
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleVolumeChange = (e) => {
@@ -48,6 +73,8 @@ export default function MusicPlayer() {
 
   const handleProgressClick = (e) => {
     const audio = audioRef.current;
+    if (!audio || !isLoaded) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const newTime = (clickX / rect.width) * duration;
@@ -55,7 +82,20 @@ export default function MusicPlayer() {
     setCurrentTime(newTime);
   };
 
+  const skipBackward = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = Math.max(0, audio.currentTime - 10);
+  };
+
+  const skipForward = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = Math.min(duration, audio.currentTime + 10);
+  };
+
   const formatTime = (seconds) => {
+    if (isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -72,17 +112,20 @@ export default function MusicPlayer() {
         <div className="flex items-center gap-2">
           <div className="cursor-pointer">
             <img 
-              src="https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fdd82ac29" 
+              src={MUSIC_CONFIG.thumbnailSrc}
               alt="Album Cover" 
               className="w-7 h-7 rounded"
+              onError={(e) => {
+                e.target.src = 'https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fdd82ac29';
+              }}
             />
           </div>
           <div className="flex-1 cursor-pointer group">
             <h3 className="text-xs font-medium text-gray-300 group-hover:text-white transition-colors">
-              Track from Spotify
+              {MUSIC_CONFIG.title}
             </h3>
             <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-              Artist Name
+              {MUSIC_CONFIG.artist}
             </p>
           </div>
         </div>
@@ -90,16 +133,25 @@ export default function MusicPlayer() {
         {/* Player Controls */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <button className="text-gray-500 hover:text-white transition-colors">
+            <button 
+              onClick={skipBackward}
+              className="text-gray-500 hover:text-white transition-colors"
+              disabled={!isLoaded}
+            >
               <SkipBack size={14} />
             </button>
             <button 
               onClick={togglePlay}
-              className="text-white hover:text-gray-200 transition-colors"
+              className="text-white hover:text-gray-200 transition-colors disabled:opacity-50"
+              disabled={!isLoaded}
             >
               {isPlaying ? <Pause size={16} /> : <Play size={16} />}
             </button>
-            <button className="text-gray-500 hover:text-white transition-colors">
+            <button 
+              onClick={skipForward}
+              className="text-gray-500 hover:text-white transition-colors"
+              disabled={!isLoaded}
+            >
               <SkipForward size={14} />
             </button>
           </div>
@@ -145,8 +197,8 @@ export default function MusicPlayer() {
         {/* Audio Element */}
         <audio 
           ref={audioRef}
-          preload="auto"
-          src="/sounds/track.mp3" // Replace with your actual audio file
+          preload="metadata"
+          src={MUSIC_CONFIG.audioSrc}
         />
       </div>
     </div>
