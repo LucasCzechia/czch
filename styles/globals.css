@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&family=Source+Code+Pro:wght@400;700&display=swap');
+@font-face {
+  font-family: 'ProggyTiny';
+  src: url('https://cursi.ng/fonts/ProggyTiny.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -17,18 +23,17 @@ body {
   width: 100vw;
 }
 
-/* Custom font for main heading - bitmap/pixel style like original */
+/* Custom font for main heading - actual ProggyTiny from original site */
 .font-proggy {
-  font-family: 'Inconsolata', 'Source Code Pro', 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
-  font-weight: 400;
+  font-family: 'ProggyTiny', 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+  font-weight: normal;
   font-size: 3rem;
-  line-height: 0.85;
-  letter-spacing: -0.03em;
+  line-height: 1;
+  letter-spacing: normal;
   text-rendering: optimizeSpeed;
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: unset;
   font-smooth: never;
-  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 640px) {
