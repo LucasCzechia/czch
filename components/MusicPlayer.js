@@ -4,8 +4,8 @@ import { Play, Pause, SkipBack, SkipForward, Volume2, X, Download, Share2, Check
 const MUSIC_CONFIG = {
   title: 'пачка сигарет - instrumental',
   artist: 'operra, verana',
-  audioSrc: '/public/audio.mp3',
-  thumbnailSrc: '/public/thumbnail.jpg',
+  audioSrc: '/assets/audio.mp3',
+  thumbnailSrc: '/assets/thumbnail.jpg',
   spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw',
   defaultVolume: 50
 };
