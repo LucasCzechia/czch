@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, X, Download, Share2, Check } from 'lucide-react';
 
-// Music configuration - easy to change
 const MUSIC_CONFIG = {
   title: 'пачка сигарет - instrumental',
   artist: 'operra, verana',
-  audioSrc: '../assets/audio.mp3',
-  thumbnailSrc: '../assets/thumbnail.jpg',
+  audioSrc: '/public/audio.mp3',
+  thumbnailSrc: '/public/thumbnail.jpg',
   spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw',
   defaultVolume: 50
 };
@@ -21,7 +20,6 @@ export default function MusicPlayer() {
   const [showCopiedNotification, setShowCopiedNotification] = useState(false);
   const audioRef = useRef(null);
 
-  // Audio player controls
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -39,7 +37,6 @@ export default function MusicPlayer() {
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('canplay', handleCanPlay);
 
-    // Set initial volume
     audio.volume = volume / 100;
 
     return () => {
@@ -128,7 +125,6 @@ export default function MusicPlayer() {
       await navigator.clipboard.writeText(MUSIC_CONFIG.spotifyUrl);
       setShowCopiedNotification(true);
       
-      // Hide notification after 2 seconds
       setTimeout(() => {
         setShowCopiedNotification(false);
       }, 2000);
@@ -167,7 +163,6 @@ export default function MusicPlayer() {
             </div>
           </div>
 
-          {/* Player Controls */}
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <button 
@@ -193,7 +188,6 @@ export default function MusicPlayer() {
               </button>
             </div>
 
-            {/* Volume Control */}
             <div className="flex items-center gap-2">
               <Volume2 size={14} className="text-gray-500" />
               <div className="w-12 h-0.5 bg-gray-800 rounded-full overflow-hidden cursor-pointer relative group">
@@ -214,7 +208,6 @@ export default function MusicPlayer() {
             </div>
           </div>
 
-          {/* Progress Bar */}
           <div className="relative">
             <div 
               className="h-0.5 bg-gray-800 rounded-full overflow-hidden cursor-pointer relative group"
@@ -231,7 +224,6 @@ export default function MusicPlayer() {
             </div>
           </div>
 
-          {/* Audio Element */}
           <audio 
             ref={audioRef}
             preload="metadata"
@@ -240,7 +232,6 @@ export default function MusicPlayer() {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-black/90 border border-zinc-800/30 rounded-lg p-4 max-w-xs w-full relative">
@@ -287,7 +278,6 @@ export default function MusicPlayer() {
         </div>
       )}
 
-      {/* Copied to Clipboard Notification */}
       {showCopiedNotification && (
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 border border-zinc-800/30 rounded-lg px-4 py-2 flex items-center gap-2 z-50 animate-pulse">
           <Check size={16} className="text-green-400" />
