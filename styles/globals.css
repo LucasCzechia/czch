@@ -13,11 +13,109 @@ body {
   overflow-x: hidden;
 }
 
+/* Ensure backdrop blur works across browsers */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Custom glassmorphism card */
+.glass-card {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(63, 63, 70, 0.3);
+  border-radius: 12px;
+}
+
+/* Discord status card */
+.status-card {
+  background: rgba(39, 39, 42, 0.2);
+  border: 1px solid rgba(63, 63, 70, 0.3);
+  border-radius: 6px;
+}
+
+/* Music player card */
+.music-card {
+  border: 1px solid rgba(63, 63, 70, 0.3);
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.music-card:hover {
+  border-color: rgba(113, 113, 122, 0.3);
+}
+
 * {
   box-sizing: border-box;
 }
 
-/* Custom scrollbar for webkit browsers */
+/* Ensure backdrop blur works across browsers */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Custom glassmorphism card */
+.glass-card {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(63, 63, 70, 0.3);
+  border-radius: 12px;
+}
+
+/* Discord status card */
+.status-card {
+  background: rgba(39, 39, 42, 0.2);
+  border: 1px solid rgba(63, 63, 70, 0.3);
+  border-radius: 6px;
+}
+
+/* Music player card */
+.music-card {
+  border: 1px solid rgba(63, 63, 70, 0.3);
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.music-card:hover {
+  border-color: rgba(113, 113, 122, 0.3);
+}
+
+/* Progress bars */
+.progress-bar {
+  background: rgb(39, 39, 42);
+  border-radius: 9999px;
+  height: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: rgb(34, 197, 94);
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.1s ease;
+}
+
+.progress-fill-gray {
+  background: rgb(156, 163, 175);
+  height: 100%;
+  border-radius: 9999px;
+  transition: background-color 0.3s ease;
+}
+
+.progress-fill-gray:hover {
+  background: rgb(255, 255, 255);
+}
+
+/* Status indicator */
+.status-online { background: rgb(34, 197, 94); }
+.status-idle { background: rgb(234, 179, 8); }
+.status-dnd { background: rgb(239, 68, 68); }
+.status-offline { background: rgb(107, 114, 128); }
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -35,12 +133,12 @@ body {
   background: #71717a;
 }
 
-/* Smooth transitions for all interactive elements */
+/* Smooth transitions */
 button, a, input {
   transition: all 0.2s ease-in-out;
 }
 
-/* Custom range slider styling */
+/* Range slider styling */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
