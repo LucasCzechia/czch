@@ -275,7 +275,7 @@ export default function MusicPlayer() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-black/90 border border-zinc-800/30 rounded-lg p-4 max-w-xs w-full relative">
+          <div className="bg-black/90 border border-zinc-800/30 rounded-lg p-4 max-w-xs w-full relative overflow-visible">
             <button 
               onClick={() => setShowModal(false)}
               className="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors"
@@ -293,11 +293,11 @@ export default function MusicPlayer() {
                   }}
                 />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-medium">{currentSong.title}</h3>
                 <p className="text-xs text-gray-400">{currentSong.artist}</p>
                 <p className="text-xs text-gray-500 mb-3">{formatDuration(duration)}</p>
-                <div className="flex gap-4 relative">
+                <div className="flex gap-4 items-center relative">
                   <button 
                     onClick={handleDownload}
                     className="text-white hover:text-gray-200 transition-colors" 
@@ -305,19 +305,21 @@ export default function MusicPlayer() {
                   >
                     <Download size={20} />
                   </button>
-                  <button 
-                    onClick={handleShare}
-                    className="text-white hover:text-gray-200 transition-colors" 
-                    title="Share"
-                  >
-                    <Share2 size={20} />
-                  </button>
-                  {showCopiedNotification && (
-                    <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-black/80 border border-zinc-800/30 rounded-lg px-3 py-1 flex items-center gap-2 whitespace-nowrap animate-bounce-slide">
-                      <Check size={14} className="text-green-400" />
-                      <span className="text-xs">Copied!</span>
-                    </div>
-                  )}
+                  <div className="relative">
+                    <button 
+                      onClick={handleShare}
+                      className="text-white hover:text-gray-200 transition-colors" 
+                      title="Share"
+                    >
+                      <Share2 size={20} />
+                    </button>
+                    {showCopiedNotification && (
+                      <div className="absolute left-full top-1/2 ml-2 transform -translate-y-1/2 bg-black/80 border border-zinc-800/30 rounded-lg px-3 py-1 flex items-center gap-2 whitespace-nowrap animate-bounce-slide z-10">
+                        <Check size={14} className="text-green-400" />
+                        <span className="text-xs">Copied!</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
