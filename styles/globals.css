@@ -10,6 +10,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+}
+
 html,
 body {
   padding: 0;
@@ -18,9 +22,15 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   background-color: #000000;
   color: #ffffff;
-  overflow: hidden;
   height: 100vh;
   width: 100vw;
+  overflow: hidden;
+}
+
+#__next {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 .font-proggy {
@@ -70,6 +80,21 @@ body {
   border-color: rgba(113, 113, 122, 0.3);
 }
 
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
 @keyframes bounce-slide {
   0% {
     opacity: 0;
@@ -94,21 +119,6 @@ body {
     opacity: 0;
     transform: translateY(-50%) translateY(12px);
   }
-}
-
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
 }
 
 @keyframes modal-fade-in {
@@ -173,53 +183,6 @@ body {
 
 .animate-modal-scale-out {
   animation: modal-scale-out 0.3s ease-in;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-#__next {
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.glass-card {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(63, 63, 70, 0.3);
-  border-radius: 12px;
-}
-
-.status-card {
-  background: rgba(39, 39, 42, 0.2);
-  border: 1px solid rgba(63, 63, 70, 0.3);
-  border-radius: 6px;
-}
-
-.music-card {
-  border: 1px solid rgba(63, 63, 70, 0.3);
-  border-radius: 6px;
-  transition: border-color 0.3s ease;
-}
-
-.music-card:hover {
-  border-color: rgba(113, 113, 122, 0.3);
 }
 
 .progress-bar {
