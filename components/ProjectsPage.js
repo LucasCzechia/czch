@@ -21,7 +21,7 @@ export default function ProjectsPage() {
                 </span>
               </div>
               <a 
-                href="https://discord.com/oauth2/authorize?client_id=1250114494081007697&permissions=8&scope=bot+applications.commands"
+                href="https://boltbot.app"
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
