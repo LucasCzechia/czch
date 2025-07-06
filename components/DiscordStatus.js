@@ -150,83 +150,85 @@ export default function DiscordStatus({ userId }) {
         )}
       </div>
 
-      <div className="mt-2 space-y-2">
-        {discordData?.listening_to_spotify && (
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <img 
-                src={discordData.spotify?.album_art_url || "https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fdd82ac29"}
-                alt="Album Art" 
-                className="w-7 h-7 rounded-sm"
-              />
-            </div>
-            <div className="text-xs text-gray-500 flex-1 min-w-0">
-              <div className="truncate">
-                <a 
-                  href="https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS"
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-gray-400 hover:text-green-400 transition-colors"
-                >
-                  {discordData.spotify?.song || 'Loading...'}
-                </a> • {discordData.spotify?.artist || 'Artist'}
-              </div>
-              <div className="flex items-center gap-1 mt-1">
-                <span className="text-[0.7rem] text-gray-500">
-                  {formatTime((currentTime - discordData.spotify?.timestamps?.start) / 1000)}
-                </span>
-                <div className="flex-1 bg-gray-800 rounded-full h-1">
-                  <div 
-                    className="bg-green-500 h-1 rounded-full" 
-                    style={{
-                      width: `${Math.min(100, Math.max(0, ((currentTime - discordData.spotify?.timestamps?.start) / (discordData.spotify?.timestamps?.end - discordData.spotify?.timestamps?.start)) * 100))}%`
-                    }}
-                  ></div>
-                </div>
-                <span className="text-[0.7rem] text-gray-500">
-                  {formatTime((discordData.spotify?.timestamps?.end - discordData.spotify?.timestamps?.start) / 1000)}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {discordData?.activities?.filter(activity => activity.type === 0).map((activity, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <div className="relative">
-              <img 
-                src={getActivityIcon(activity) || `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets?.large_image}.png`}
-                alt={activity.name}
-                className="w-7 h-7 rounded-sm"
-                onError={(e) => {
-                  e.target.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
-                }}
-              />
-              {activity.assets?.small_image && (
+      {(discordData?.listening_to_spotify || discordData?.activities?.filter(activity => activity.type === 0).length > 0) && (
+        <div className="mt-2 space-y-2">
+          {discordData?.listening_to_spotify && (
+            <div className="flex items-center gap-2">
+              <div className="relative">
                 <img 
-                  src={`https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png`}
-                  alt="Small icon" 
-                  className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-zinc-900"
+                  src={discordData.spotify?.album_art_url || "https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fdd82ac29"}
+                  alt="Album Art" 
+                  className="w-7 h-7 rounded-sm"
+                />
+              </div>
+              <div className="text-xs text-gray-500 flex-1 min-w-0">
+                <div className="truncate">
+                  <a 
+                    href="https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS"
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-gray-400 hover:text-green-400 transition-colors"
+                  >
+                    {discordData.spotify?.song || 'Loading...'}
+                  </a> • {discordData.spotify?.artist || 'Artist'}
+                </div>
+                <div className="flex items-center gap-1 mt-1">
+                  <span className="text-[0.7rem] text-gray-500">
+                    {formatTime((currentTime - discordData.spotify?.timestamps?.start) / 1000)}
+                  </span>
+                  <div className="flex-1 bg-gray-800 rounded-full h-1">
+                    <div 
+                      className="bg-green-500 h-1 rounded-full" 
+                      style={{
+                        width: `${Math.min(100, Math.max(0, ((currentTime - discordData.spotify?.timestamps?.start) / (discordData.spotify?.timestamps?.end - discordData.spotify?.timestamps?.start)) * 100))}%`
+                      }}
+                    ></div>
+                  </div>
+                  <span className="text-[0.7rem] text-gray-500">
+                    {formatTime((discordData.spotify?.timestamps?.end - discordData.spotify?.timestamps?.start) / 1000)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {discordData?.activities?.filter(activity => activity.type === 0).map((activity, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div className="relative">
+                <img 
+                  src={getActivityIcon(activity) || `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets?.large_image}.png`}
+                  alt={activity.name}
+                  className="w-7 h-7 rounded-sm"
                   onError={(e) => {
-                    e.target.style.display = 'none';
+                    e.target.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
                   }}
                 />
-              )}
-            </div>
-            <div className="text-xs text-gray-500 flex-1 min-w-0">
-              <div className="truncate">
-                <span className="text-gray-400">{activity.details || activity.name}</span>
-                {activity.state && <span> • {activity.state}</span>}
+                {activity.assets?.small_image && (
+                  <img 
+                    src={`https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png`}
+                    alt="Small icon" 
+                    className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-zinc-900"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                )}
               </div>
-              {activity.timestamps?.start && (
-                <div className="text-gray-500 text-[0.7rem] mt-1">
-                  {formatTime((currentTime - activity.timestamps.start) / 1000)} elapsed
+              <div className="text-xs text-gray-500 flex-1 min-w-0">
+                <div className="truncate">
+                  <span className="text-gray-400">{activity.details || activity.name}</span>
+                  {activity.state && <span> • {activity.state}</span>}
                 </div>
-              )}
+                {activity.timestamps?.start && (
+                  <div className="text-gray-500 text-[0.7rem] mt-1">
+                    {formatTime((currentTime - activity.timestamps.start) / 1000)} elapsed
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-         }
+}
