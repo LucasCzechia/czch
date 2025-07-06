@@ -309,7 +309,6 @@ export default function MusicPlayer({ onAudioStateChange }) {
             ref={audioRef}
             preload="metadata"
             src={audioSrc}
-            crossOrigin="anonymous"
           />
         </div>
       </div>
