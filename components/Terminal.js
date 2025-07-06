@@ -287,8 +287,8 @@ Type 'help' for commands`
         onTouchStart={handleTouchStart}
       >
         <div className="flex items-center">
-          <HelpCircle className="w-3.5 h-3.5 mr-1.5 text-gray-400" />
-          <span className="text-xs text-gray-300 font-mono">terminal</span>
+          <HelpCircle className={`w-3.5 h-3.5 mr-1.5 ${terminalColor === 'white' ? 'text-gray-600' : 'text-gray-400'}`} />
+          <span className={`text-xs font-mono ${terminalColor === 'white' ? 'text-gray-800' : 'text-gray-300'}`}>terminal</span>
         </div>
         <div className="flex items-center gap-1.5">
           <button 
@@ -296,7 +296,7 @@ Type 'help' for commands`
               e.stopPropagation();
               setIsMinimized(!isMinimized);
             }}
-            className="text-gray-400 hover:text-gray-200 transition-colors p-0.5"
+            className={`transition-colors p-0.5 ${terminalColor === 'white' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-400 hover:text-gray-200'}`}
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
@@ -305,7 +305,7 @@ Type 'help' for commands`
               e.stopPropagation();
               onClose();
             }}
-            className="text-gray-400 hover:text-gray-200 transition-colors p-0.5"
+            className={`transition-colors p-0.5 ${terminalColor === 'white' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-400 hover:text-gray-200'}`}
           >
             <X className="w-3.5 h-3.5" />
           </button>
