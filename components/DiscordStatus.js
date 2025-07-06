@@ -5,6 +5,7 @@ export default function DiscordStatus({ userId }) {
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [hasError, setHasError] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     const timeInterval = setInterval(() => {
@@ -15,6 +16,8 @@ export default function DiscordStatus({ userId }) {
   }, []);
 
   useEffect(() => {
+    let loadingStartTime = Date.now();
+    
     const fetchDiscordStatus = async () => {
       try {
         const response = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
@@ -27,10 +30,20 @@ export default function DiscordStatus({ userId }) {
             return prevData;
           });
           setHasError(false);
+          
+          const elapsedTime = Date.now() - loadingStartTime;
+          const remainingTime = Math.max(0, 1000 - elapsedTime);
+          
+          setTimeout(() => {
+            setLoading(false);
+            setTimeout(() => {
+              setShowContent(true);
+            }, 50);
+          }, remainingTime);
         } else {
           setHasError(true);
+          setLoading(false);
         }
-        setLoading(false);
       } catch (error) {
         console.error('Failed to fetch Discord status:', error);
         setHasError(true);
@@ -86,7 +99,7 @@ export default function DiscordStatus({ userId }) {
     return customStatus;
   };
 
-  if (loading || hasError || !discordData) {
+  if (loading || hasError || !discordData || !showContent) {
     return (
       <div className="status-card mb-6 p-2">
         <div className="flex items-center gap-2">
@@ -103,7 +116,7 @@ export default function DiscordStatus({ userId }) {
   const customStatus = getCustomStatus();
 
   return (
-    <div className="status-card mb-6 p-2">
+    <div className="status-card mb-6 p-2 animate-fade-in">
       <div className="flex items-center gap-2">
         <div className="relative">
           <div className="relative">
