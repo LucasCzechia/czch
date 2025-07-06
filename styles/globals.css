@@ -23,7 +23,6 @@ body {
   width: 100vw;
 }
 
-/* Custom font for main heading - actual ProggyTiny from original site */
 .font-proggy {
   font-family: 'ProggyTiny', 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
   font-weight: normal;
@@ -41,12 +40,12 @@ body {
     font-size: 3.5rem;
   }
 }
+
 .backdrop-blur-sm {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* Custom glassmorphism card */
 .glass-card {
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(4px);
@@ -55,14 +54,12 @@ body {
   border-radius: 12px;
 }
 
-/* Discord status card */
 .status-card {
   background: rgba(39, 39, 42, 0.2);
   border: 1px solid rgba(63, 63, 70, 0.3);
   border-radius: 6px;
 }
 
-/* Music player card */
 .music-card {
   border: 1px solid rgba(63, 63, 70, 0.3);
   border-radius: 6px;
@@ -73,11 +70,32 @@ body {
   border-color: rgba(113, 113, 122, 0.3);
 }
 
+@keyframes bounce-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateY(10px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-50%) translateY(-5px);
+  }
+  40% {
+    transform: translateY(-50%) translateY(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-50%) translateY(0px);
+  }
+}
+
+.animate-bounce-slide {
+  animation: bounce-slide 0.4s ease-out;
+}
+
 * {
   box-sizing: border-box;
 }
 
-/* Prevent scrolling completely */
 body {
   position: fixed;
   top: 0;
@@ -92,13 +110,11 @@ body {
   overflow: hidden;
 }
 
-/* Ensure backdrop blur works across browsers */
 .backdrop-blur-sm {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* Custom glassmorphism card */
 .glass-card {
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(4px);
@@ -107,14 +123,12 @@ body {
   border-radius: 12px;
 }
 
-/* Discord status card */
 .status-card {
   background: rgba(39, 39, 42, 0.2);
   border: 1px solid rgba(63, 63, 70, 0.3);
   border-radius: 6px;
 }
 
-/* Music player card */
 .music-card {
   border: 1px solid rgba(63, 63, 70, 0.3);
   border-radius: 6px;
@@ -125,7 +139,6 @@ body {
   border-color: rgba(113, 113, 122, 0.3);
 }
 
-/* Progress bars */
 .progress-bar {
   background: rgb(39, 39, 42);
   border-radius: 9999px;
@@ -151,13 +164,11 @@ body {
   background: rgb(255, 255, 255);
 }
 
-/* Status indicator */
 .status-online { background: rgb(34, 197, 94); }
 .status-idle { background: rgb(234, 179, 8); }
 .status-dnd { background: rgb(239, 68, 68); }
 .status-offline { background: rgb(107, 114, 128); }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -175,12 +186,10 @@ body {
   background: #71717a;
 }
 
-/* Smooth transitions */
 button, a, input {
   transition: all 0.2s ease-in-out;
 }
 
-/* Range slider styling */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
