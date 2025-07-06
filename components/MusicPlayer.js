@@ -297,7 +297,7 @@ export default function MusicPlayer() {
                 <h3 className="text-sm font-medium">{currentSong.title}</h3>
                 <p className="text-xs text-gray-400">{currentSong.artist}</p>
                 <p className="text-xs text-gray-500 mb-3">{formatDuration(duration)}</p>
-                <div className="flex gap-4">
+                <div className="flex gap-4 relative">
                   <button 
                     onClick={handleDownload}
                     className="text-white hover:text-gray-200 transition-colors" 
@@ -312,6 +312,12 @@ export default function MusicPlayer() {
                   >
                     <Share2 size={20} />
                   </button>
+                  {showCopiedNotification && (
+                    <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-black/80 border border-zinc-800/30 rounded-lg px-3 py-1 flex items-center gap-2 whitespace-nowrap animate-bounce-slide">
+                      <Check size={14} className="text-green-400" />
+                      <span className="text-xs">Copied!</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -344,13 +350,6 @@ export default function MusicPlayer() {
               </div>
             )}
           </div>
-        </div>
-      )}
-
-      {showCopiedNotification && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 border border-zinc-800/30 rounded-lg px-4 py-2 flex items-center gap-2 z-50 animate-pulse">
-          <Check size={16} className="text-green-400" />
-          <span className="text-sm">Copied to clipboard</span>
         </div>
       )}
     </>
