@@ -2,7 +2,7 @@ import { ExternalLink } from 'lucide-react';
 
 export default function ProjectsPage() {
   return (
-    <div className="p-4">
+    <div className="pt-4 px-4">
       <div className="space-y-3 animate-slide-up">
         <h2 className="text-lg font-semibold mb-3">projects</h2>
         
