@@ -5,10 +5,6 @@ const ParticleBackground = dynamic(() => import('../components/ParticleBackgroun
   ssr: false
 });
 
-const Navbar = dynamic(() => import('../components/Navbar'), {
-  ssr: false
-});
-
 const DiscordStatus = dynamic(() => import('../components/DiscordStatus'), {
   ssr: false
 });
@@ -25,11 +21,10 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
 
   return (
-    <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex flex-col items-center justify-start p-6">
+    <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-start justify-center p-6 pt-20">
       <ParticleBackground />
-      <Navbar />
       
-      <div className="w-full max-w-md glass-card overflow-visible relative z-10 mt-24">
+      <div className="w-full max-w-md glass-card overflow-visible relative z-10">
         <div className="flex justify-between p-2 border-b border-zinc-800/30">
           <div className="flex gap-1">
             <button 
