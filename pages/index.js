@@ -17,10 +17,10 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
 
   return (
-    <div className="min-h-screen w-full bg-black text-white relative overflow-hidden flex items-center justify-center px-4 py-6 sm:p-6">
+    <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6">
       <ParticleBackground />
       
-      <div className="w-full max-w-sm sm:max-w-md glass-card overflow-visible relative z-10 mx-auto">
+      <div className="w-full max-w-md glass-card overflow-visible relative z-10">
         <div className="flex justify-between p-2 border-b border-zinc-800/30">
           <div className="flex gap-1">
             <button 
