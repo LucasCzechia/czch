@@ -37,13 +37,29 @@ export default function Terminal({ isOpen, onClose }) {
       }
     };
 
+    const handleTouchMove = (e) => {
+      if (isDragging && e.touches[0]) {
+        e.preventDefault();
+        setPosition({
+          x: e.touches[0].clientX - dragOffset.x,
+          y: e.touches[0].clientY - dragOffset.y
+        });
+      }
+    };
+
     const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    const handleTouchEnd = () => {
       setIsDragging(false);
     };
 
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
       document.body.style.userSelect = 'none';
     } else {
       document.body.style.userSelect = '';
@@ -52,6 +68,8 @@ export default function Terminal({ isOpen, onClose }) {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
       document.body.style.userSelect = '';
     };
   }, [isDragging, dragOffset]);
@@ -65,6 +83,17 @@ export default function Terminal({ isOpen, onClose }) {
     setIsDragging(true);
   };
 
+  const handleTouchStart = (e) => {
+    if (e.touches[0]) {
+      const rect = terminalRef.current.getBoundingClientRect();
+      setDragOffset({
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top
+      });
+      setIsDragging(true);
+    }
+  };
+
   const getColorClass = (color) => {
     const colors = {
       green: 'text-green-500',
@@ -76,6 +105,47 @@ export default function Terminal({ isOpen, onClose }) {
       pink: 'text-pink-500'
     };
     return colors[color] || 'text-green-500';
+  };
+
+  const getTerminalTheme = (color) => {
+    const themes = {
+      green: {
+        bg: 'rgba(10, 15, 10, 0.8)',
+        border: 'border-green-700/50',
+        header: 'bg-green-900/70'
+      },
+      blue: {
+        bg: 'rgba(10, 10, 15, 0.8)',
+        border: 'border-blue-700/50',
+        header: 'bg-blue-900/70'
+      },
+      red: {
+        bg: 'rgba(15, 10, 10, 0.8)',
+        border: 'border-red-700/50',
+        header: 'bg-red-900/70'
+      },
+      yellow: {
+        bg: 'rgba(15, 15, 10, 0.8)',
+        border: 'border-yellow-700/50',
+        header: 'bg-yellow-900/70'
+      },
+      purple: {
+        bg: 'rgba(15, 10, 15, 0.8)',
+        border: 'border-purple-700/50',
+        header: 'bg-purple-900/70'
+      },
+      cyan: {
+        bg: 'rgba(10, 15, 15, 0.8)',
+        border: 'border-cyan-700/50',
+        header: 'bg-cyan-900/70'
+      },
+      pink: {
+        bg: 'rgba(15, 10, 13, 0.8)',
+        border: 'border-pink-700/50',
+        header: 'bg-pink-900/70'
+      }
+    };
+    return themes[color] || themes.green;
   };
 
   const executeCommand = (cmd) => {
@@ -116,12 +186,12 @@ export default function Terminal({ isOpen, onClose }) {
           const validColors = ['green', 'blue', 'red', 'yellow', 'purple', 'cyan', 'pink'];
           if (validColors.includes(color)) {
             setTerminalColor(color);
-            setHistory(prev => [...prev, { type: 'output', content: `Terminal color changed to ${color}` }]);
+            setHistory(prev => [...prev, { type: 'output', content: `Terminal theme changed to ${color}` }]);
           } else {
             setHistory(prev => [...prev, { type: 'error', content: `Error: Invalid color "${color}". Available: ${validColors.join(', ')}` }]);
           }
         } else {
-          setHistory(prev => [...prev, { type: 'error', content: 'Error: Missing color parameter. Usage: color [hex/name]' }]);
+          setHistory(prev => [...prev, { type: 'error', content: 'Error: Missing color parameter. Usage: color [green|blue|red|yellow|purple|cyan|pink]' }]);
         }
         break;
 
@@ -174,23 +244,26 @@ Type 'help' for commands`
 
   if (!isOpen) return null;
 
+  const theme = getTerminalTheme(terminalColor);
+
   return (
     <div 
       ref={terminalRef}
-      className="absolute overflow-hidden text-white rounded-md border border-zinc-700/50 shadow-lg z-50"
+      className={`absolute overflow-hidden text-white rounded-md border shadow-lg z-50 ${theme.border}`}
       style={{
         width: '90%',
         maxWidth: '350px',
         top: `${position.y}px`,
         left: `${position.x}px`,
-        backgroundColor: 'rgba(10, 10, 15, 0.8)',
+        backgroundColor: theme.bg,
         backdropFilter: 'blur(8px)',
         height: isMinimized ? 'auto' : '250px'
       }}
     >
       <div 
-        className="flex items-center justify-between px-2 py-1 bg-zinc-900/70 cursor-move border-b border-zinc-700/50"
+        className={`flex items-center justify-between px-2 py-1 cursor-move border-b ${theme.border} ${theme.header}`}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
       >
         <div className="flex items-center">
           <HelpCircle className="w-3.5 h-3.5 mr-1.5 text-gray-400" />
@@ -219,10 +292,10 @@ Type 'help' for commands`
       </div>
       
       {!isMinimized && (
-        <div className="p-2 h-[200px] flex flex-col">
+        <div className="flex flex-col" style={{ height: 'calc(250px - 32px)' }}>
           <div 
             ref={historyRef}
-            className="flex-1 overflow-y-auto mb-1 font-mono text-xs space-y-1"
+            className="flex-1 overflow-y-auto p-2 font-mono text-xs space-y-1"
           >
             {history.map((entry, index) => (
               <div key={index}>
@@ -251,18 +324,20 @@ Type 'help' for commands`
             ))}
           </div>
           
-          <form onSubmit={handleSubmit} className="flex items-center">
-            <span className={`mr-1 text-xs font-mono ${getColorClass(terminalColor)}`}>$</span>
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="flex-1 bg-transparent border-none outline-none text-white font-mono text-xs"
-              placeholder="Type a command..."
-              autoComplete="off"
-            />
-          </form>
+          <div className="p-2 border-t border-zinc-700/30">
+            <form onSubmit={handleSubmit} className="flex items-center">
+              <span className={`mr-1 text-xs font-mono ${getColorClass(terminalColor)}`}>$</span>
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="flex-1 bg-transparent border-none outline-none text-white font-mono text-xs"
+                placeholder="Type a command..."
+                autoComplete="off"
+              />
+            </form>
+          </div>
         </div>
       )}
     </div>
