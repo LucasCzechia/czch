@@ -18,6 +18,7 @@ export default function MusicPlayer() {
   const [volume, setVolume] = useState(50);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [modalClosing, setModalClosing] = useState(false);
   const [showCopiedNotification, setShowCopiedNotification] = useState(false);
   const [copiedAnimatingOut, setCopiedAnimatingOut] = useState(false);
   const [loadError, setLoadError] = useState(false);
@@ -172,6 +173,20 @@ export default function MusicPlayer() {
     }
   };
 
+  const closeModal = () => {
+    setModalClosing(true);
+    setTimeout(() => {
+      setShowModal(false);
+      setModalClosing(false);
+    }, 300);
+  };
+
+  const handleModalBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
+  };
+
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
@@ -280,10 +295,13 @@ export default function MusicPlayer() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-black/90 border border-zinc-800/30 rounded-lg p-4 max-w-xs w-full relative overflow-visible">
+        <div 
+          className={`fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 ${modalClosing ? 'animate-modal-fade-out' : 'animate-modal-fade-in'}`}
+          onClick={handleModalBackdropClick}
+        >
+          <div className={`bg-black/90 border border-zinc-800/30 rounded-lg p-4 max-w-xs w-full relative overflow-visible ${modalClosing ? 'animate-modal-scale-out' : 'animate-modal-scale-in'}`}>
             <button 
-              onClick={() => setShowModal(false)}
+              onClick={closeModal}
               className="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors"
             >
               <X size={16} />
@@ -345,6 +363,7 @@ export default function MusicPlayer() {
                       onClick={() => {
                         setCurrentSongIndex(index);
                         setCurrentTime(0);
+                        closeModal();
                       }}
                     >
                       <span className="w-4 text-center">{index + 1}</span>
