@@ -24,25 +24,108 @@ export default function Home() {
     switch (activeTab) {
       case 'home':
         return (
-          <div className="p-4">
-            <div className="mb-6">
-              <h1 className="font-proggy mb-0">czch</h1>
-              <p className="text-gray-400 text-xs leading-none">
-                full stack developer specializing in artifical intelligence
-              </p>
+          <>
+            <div className="flex justify-between p-2 border-b border-zinc-800/30">
+              <div className="flex gap-1">
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'home' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('home')}
+                >
+                  home
+                </button>
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'projects' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('projects')}
+                >
+                  projects
+                </button>
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'contact' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('contact')}
+                >
+                  contact
+                </button>
+              </div>
+              <button className="px-2 text-xs text-gray-400 hover:text-white transition-colors">
+                [?]
+              </button>
             </div>
-            <DiscordStatus userId="1146944562951106721" />
-            <MusicPlayer />
-          </div>
+            <div className="p-4">
+              <div className="mb-6">
+                <h1 className="font-proggy mb-0">czch</h1>
+                <p className="text-gray-400 text-xs leading-none">
+                  full stack developer specializing in artifical intelligence
+                </p>
+              </div>
+              <DiscordStatus userId="1146944562951106721" />
+              <MusicPlayer />
+            </div>
+          </>
         );
       case 'projects':
         return (
-          <div className="p-4">
-            <div className="text-gray-400 text-xs">Projects coming soon...</div>
-          </div>
+          <>
+            <div className="flex justify-between p-2 border-b border-zinc-800/30">
+              <div className="flex gap-1">
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'home' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('home')}
+                >
+                  home
+                </button>
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'projects' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('projects')}
+                >
+                  projects
+                </button>
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'contact' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('contact')}
+                >
+                  contact
+                </button>
+              </div>
+              <button className="px-2 text-xs text-gray-400 hover:text-white transition-colors">
+                [?]
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="text-gray-400 text-xs">Projects coming soon...</div>
+            </div>
+          </>
         );
       case 'contact':
-        return <ContactPage />;
+        return (
+          <>
+            <div className="flex justify-between p-2 border-b border-zinc-800/30">
+              <div className="flex gap-1">
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'home' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('home')}
+                >
+                  home
+                </button>
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'projects' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('projects')}
+                >
+                  projects
+                </button>
+                <button 
+                  className={`px-3 py-1 text-xs transition-colors ${activeTab === 'contact' ? 'text-white' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('contact')}
+                >
+                  contact
+                </button>
+              </div>
+              <button className="px-2 text-xs text-gray-400 hover:text-white transition-colors">
+                [?]
+              </button>
+            </div>
+            <ContactPage />
+          </>
+        );
       default:
         return null;
     }
@@ -53,32 +136,6 @@ export default function Home() {
       <ParticleBackground />
       
       <div className="w-full max-w-md glass-card overflow-visible relative z-10">
-        <div className="flex justify-between p-2 border-b border-zinc-800/30">
-          <div className="flex gap-1">
-            <button 
-              className={`px-3 py-1 text-xs transition-colors ${activeTab === 'home' ? 'text-white' : 'text-gray-500'}`}
-              onClick={() => setActiveTab('home')}
-            >
-              home
-            </button>
-            <button 
-              className={`px-3 py-1 text-xs transition-colors ${activeTab === 'projects' ? 'text-white' : 'text-gray-500'}`}
-              onClick={() => setActiveTab('projects')}
-            >
-              projects
-            </button>
-            <button 
-              className={`px-3 py-1 text-xs transition-colors ${activeTab === 'contact' ? 'text-white' : 'text-gray-500'}`}
-              onClick={() => setActiveTab('contact')}
-            >
-              contact
-            </button>
-          </div>
-          <button className="px-2 text-xs text-gray-400 hover:text-white transition-colors">
-            [?]
-          </button>
-        </div>
-
         {renderContent()}
       </div>
     </div>
