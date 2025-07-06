@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, X, Download, Share2, Check } from 'lucide-react';
 
-const PLAYLIST = [
-  {
-    title: 'пачка сигарет - instrumental',
-    artist: 'operra, verana',
-    folder: 'pachka-sigaret',
-    spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw'
-  }
-];
-
 export default function MusicPlayer() {
+  const PLAYLIST = [
+    {
+      title: 'пачка сигарет - instrumental',
+      artist: 'operra, verana',
+      folder: 'pachka-sigaret',
+      spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw'
+    }
+  ];
+
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -24,7 +24,7 @@ export default function MusicPlayer() {
   const [loadError, setLoadError] = useState(false);
   const audioRef = useRef(null);
 
-  const currentSong = PLAYLIST[currentSongIndex];
+  const currentSong = PLAYLIST[currentSongIndex] || PLAYLIST[0];
   const audioSrc = `/assets/audio/${currentSong.folder}/${currentSong.folder}.mp3`;
   const thumbnailSrc = `/assets/audio/${currentSong.folder}/thumbnail.png`;
 
