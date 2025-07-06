@@ -28,6 +28,7 @@ export default function MusicPlayer() {
   const audioSrc = `/assets/audio/${currentSong.folder}/${currentSong.folder}.mp3`;
   const thumbnailSrc = `/assets/audio/${currentSong.folder}/thumbnail.png`;
 
+  // Handle song loading and event listeners
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -62,7 +63,7 @@ export default function MusicPlayer() {
     audio.addEventListener('error', handleError);
     audio.addEventListener('loadstart', handleLoadStart);
 
-    audio.volume = volume / 100;
+    // Only load the audio when song changes, not when volume changes
     audio.load();
 
     return () => {
@@ -73,7 +74,15 @@ export default function MusicPlayer() {
       audio.removeEventListener('error', handleError);
       audio.removeEventListener('loadstart', handleLoadStart);
     };
-  }, [volume, currentSongIndex]);
+  }, [currentSongIndex]); // Only depend on currentSongIndex
+
+  // Handle volume changes separately
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = volume / 100;
+    }
+  }, [volume]);
 
   const playNextSong = () => {
     const nextIndex = (currentSongIndex + 1) % PLAYLIST.length;
@@ -113,9 +122,6 @@ export default function MusicPlayer() {
   const handleVolumeChange = (e) => {
     const newVolume = parseInt(e.target.value);
     setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume / 100;
-    }
   };
 
   const handleProgressClick = (e) => {
