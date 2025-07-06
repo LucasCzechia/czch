@@ -21,7 +21,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
 
   return (
-    <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-start justify-center p-6 pt-20">
+    <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-start justify-center p-6 pt-12">
       <ParticleBackground />
       
       <div className="w-full max-w-md glass-card overflow-visible relative z-10">
