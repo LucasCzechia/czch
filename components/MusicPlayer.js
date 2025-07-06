@@ -19,6 +19,7 @@ export default function MusicPlayer() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showCopiedNotification, setShowCopiedNotification] = useState(false);
+  const [copiedAnimatingOut, setCopiedAnimatingOut] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const audioRef = useRef(null);
 
@@ -157,10 +158,15 @@ export default function MusicPlayer() {
     try {
       await navigator.clipboard.writeText(currentSong.spotifyUrl);
       setShowCopiedNotification(true);
+      setCopiedAnimatingOut(false);
       
       setTimeout(() => {
-        setShowCopiedNotification(false);
-      }, 2000);
+        setCopiedAnimatingOut(true);
+        setTimeout(() => {
+          setShowCopiedNotification(false);
+          setCopiedAnimatingOut(false);
+        }, 300);
+      }, 1700);
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
     }
@@ -314,7 +320,7 @@ export default function MusicPlayer() {
                       <Share2 size={20} />
                     </button>
                     {showCopiedNotification && (
-                      <div className="absolute left-full top-1/2 ml-2 transform -translate-y-1/2 bg-black/80 border border-zinc-800/30 rounded-lg px-3 py-1 flex items-center gap-2 whitespace-nowrap animate-bounce-slide z-10">
+                      <div className={`absolute left-full top-1/2 ml-2 transform -translate-y-1/2 bg-black/80 border border-zinc-800/30 rounded-lg px-3 py-1 flex items-center gap-2 whitespace-nowrap z-10 ${copiedAnimatingOut ? 'animate-slide-down' : 'animate-bounce-slide'}`}>
                         <Check size={14} className="text-green-400" />
                         <span className="text-xs">Copied!</span>
                       </div>
