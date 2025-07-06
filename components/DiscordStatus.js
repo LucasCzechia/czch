@@ -4,6 +4,7 @@ export default function DiscordStatus({ userId }) {
   const [discordData, setDiscordData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const timeInterval = setInterval(() => {
@@ -25,10 +26,14 @@ export default function DiscordStatus({ userId }) {
             }
             return prevData;
           });
+          setHasError(false);
+        } else {
+          setHasError(true);
         }
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch Discord status:', error);
+        setHasError(true);
         setLoading(false);
       }
     };
@@ -70,11 +75,6 @@ export default function DiscordStatus({ userId }) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const formatElapsedTime = (startTime) => {
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    return formatTime(elapsed);
-  };
-
   const getCustomStatus = () => {
     const customStatus = discordData?.activities?.find(a => a.type === 4)?.state;
     const isOffline = discordData?.discord_status === 'offline' || !discordData?.discord_status;
@@ -86,18 +86,8 @@ export default function DiscordStatus({ userId }) {
     return customStatus;
   };
 
-  if (loading) {
-    return (
-      <div className="status-card mb-6 p-2">
-        <div className="flex gap-2 items-center">
-          <div className="w-7 h-7 bg-zinc-800 rounded-full animate-pulse"></div>
-          <div className="flex flex-col flex-1">
-            <div className="w-20 h-3 bg-zinc-800 rounded animate-pulse mb-1"></div>
-            <div className="w-32 h-2 bg-zinc-800 rounded animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    );
+  if (loading || hasError || !discordData) {
+    return null;
   }
 
   const customStatus = getCustomStatus();
