@@ -211,18 +211,6 @@ body {
   }
 }
 
-@keyframes terminal-minimize {
-  0% {
-    transform: scaleY(1);
-  }
-  50% {
-    transform: scaleY(0.8);
-  }
-  100% {
-    transform: scaleY(1);
-  }
-}
-
 .animate-bounce-slide {
   animation: bounce-slide 0.6s ease-out;
 }
@@ -253,10 +241,6 @@ body {
 
 .animate-terminal-close {
   animation: terminal-close 0.3s ease-in;
-}
-
-.animate-terminal-minimize {
-  animation: terminal-minimize 0.2s ease-in-out;
 }
 
 .progress-bar {
