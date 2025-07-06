@@ -93,7 +93,7 @@ export default function DiscordStatus({ userId }) {
   const customStatus = getCustomStatus();
 
   return (
-    <div className="status-card mb-6 p-2">
+    <div className="status-card mb-6 p-2 animate-fade-in">
       <div className="flex items-center gap-2">
         <div className="relative">
           <div className="relative">
