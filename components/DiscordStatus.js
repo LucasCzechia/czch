@@ -118,7 +118,24 @@ export default function DiscordStatus({ userId }) {
           </div>
           <div className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-zinc-900 ${getStatusColor(discordData?.discord_status)}`}></div>
         </div>
-        <div className="flex flex-col">
+        {customStatus ? (
+          <div className="flex flex-col">
+            <a 
+              href={`https://discord.com/users/${discordData?.discord_user?.id || userId}`}
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="group text-xs text-gray-200 w-fit"
+            >
+              <span className="relative">
+                {discordData?.discord_user?.username || 'czch'}
+                <span className="absolute bottom-0 left-0 w-full h-px bg-gray-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+              </span>
+            </a>
+            <span className="text-xs text-gray-400 truncate max-w-[180px]">
+              {customStatus}
+            </span>
+          </div>
+        ) : (
           <a 
             href={`https://discord.com/users/${discordData?.discord_user?.id || userId}`}
             target="_blank" 
@@ -130,12 +147,7 @@ export default function DiscordStatus({ userId }) {
               <span className="absolute bottom-0 left-0 w-full h-px bg-gray-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
             </span>
           </a>
-          {customStatus && (
-            <span className="text-xs text-gray-400 truncate max-w-[180px]">
-              {customStatus}
-            </span>
-          )}
-        </div>
+        )}
       </div>
 
       <div className="mt-2 space-y-2">
