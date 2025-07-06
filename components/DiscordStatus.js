@@ -66,20 +66,18 @@ export default function DiscordStatus({ userId }) {
     }
   };
 
-  const getActivityIcon = (activity) => {
-    if (activity?.name?.toLowerCase().includes('spotify')) {
-      return 'https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fdd82ac29';
+  const getActivityThumbnail = (activity) => {
+    if (!activity?.application_id || !activity?.assets?.large_image) {
+      return null;
     }
-    if (activity?.name?.toLowerCase().includes('roblox')) {
-      return 'https://dcdn.dstn.to/app-icons/1005469189907173486';
+    return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
+  };
+
+  const getActivitySmallIcon = (activity) => {
+    if (!activity?.application_id || !activity?.assets?.small_image) {
+      return null;
     }
-    if (activity?.name?.toLowerCase().includes('visual studio code')) {
-      return 'https://cdn.discordapp.com/app-assets/383226320970055681/1359299282380918886.png';
-    }
-    if (activity?.application_id && activity?.assets?.large_image) {
-      return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
-    }
-    return null;
+    return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png`;
   };
 
   const formatTime = (seconds) => {
@@ -205,41 +203,52 @@ export default function DiscordStatus({ userId }) {
             </div>
           )}
 
-          {discordData?.activities?.filter(activity => activity.type === 0).map((activity, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <div className="relative">
-                <img 
-                  src={getActivityIcon(activity) || `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets?.large_image}.png`}
-                  alt={activity.name}
-                  className="w-7 h-7 rounded-sm"
-                  onError={(e) => {
-                    e.target.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
-                  }}
-                />
-                {activity.assets?.small_image && (
-                  <img 
-                    src={`https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png`}
-                    alt="Small icon" 
-                    className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-zinc-900"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                )}
-              </div>
-              <div className="text-xs text-gray-500 flex-1 min-w-0">
-                <div className="truncate">
-                  <span className="text-gray-400">{activity.details || activity.name}</span>
-                  {activity.state && <span> • {activity.state}</span>}
+          {discordData?.activities?.filter(activity => activity.type === 0).map((activity, index) => {
+            const thumbnail = getActivityThumbnail(activity);
+            const smallIcon = getActivitySmallIcon(activity);
+            
+            return (
+              <div key={index} className="flex items-center gap-2">
+                <div className="relative">
+                  {thumbnail ? (
+                    <img 
+                      src={thumbnail}
+                      alt={activity.name}
+                      className="w-7 h-7 rounded-sm"
+                      onError={(e) => {
+                        e.target.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-sm bg-gray-700 flex items-center justify-center">
+                      <span className="text-xs text-gray-400">?</span>
+                    </div>
+                  )}
+                  {smallIcon && (
+                    <img 
+                      src={smallIcon}
+                      alt="Small icon" 
+                      className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-zinc-900"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  )}
                 </div>
-                {activity.timestamps?.start && (
-                  <div className="text-gray-500 text-[0.7rem] mt-1">
-                    {formatTime((currentTime - activity.timestamps.start) / 1000)} elapsed
+                <div className="text-xs text-gray-500 flex-1 min-w-0">
+                  <div className="truncate">
+                    <span className="text-gray-400">{activity.details || activity.name}</span>
+                    {activity.state && <span> • {activity.state}</span>}
                   </div>
-                )}
+                  {activity.timestamps?.start && (
+                    <div className="text-gray-500 text-[0.7rem] mt-1">
+                      {formatTime((currentTime - activity.timestamps.start) / 1000)} elapsed
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
