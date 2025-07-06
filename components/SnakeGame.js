@@ -1,28 +1,32 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Play, Pause, RotateCcw, Trophy } from 'lucide-react';
+import { X, Play, Pause, RotateCcw } from 'lucide-react';
 
 export default function SnakeGame({ isOpen, onClose }) {
   const [gameState, setGameState] = useState('idle');
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
+  const [highScore, setHighScore] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return parseInt(localStorage.getItem('snake-high-score') || '0');
+    }
+    return 0;
+  });
   const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
-  const [food, setFood] = useState({ x: 5, y: 5 });
+  const [food, setFood] = useState({ x: 15, y: 15 });
   const [direction, setDirection] = useState({ x: 0, y: 0 });
   const [nextDirection, setNextDirection] = useState({ x: 0, y: 0 });
   const [gameClosing, setGameClosing] = useState(false);
   const [showGame, setShowGame] = useState(false);
-  const [position, setPosition] = useState({ x: 60, y: 100 });
+  const [position, setPosition] = useState({ x: 80, y: 120 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
-  const [gameSpeed, setGameSpeed] = useState(150);
   
   const gameRef = useRef(null);
   const canvasRef = useRef(null);
   const gameLoopRef = useRef(null);
+  const touchStartRef = useRef({ x: 0, y: 0 });
 
   const GRID_SIZE = 15;
-  const CANVAS_SIZE = 360;
+  const CANVAS_SIZE = 300;
   const GRID_COUNT = CANVAS_SIZE / GRID_SIZE;
 
   useEffect(() => {
@@ -36,8 +40,8 @@ export default function SnakeGame({ isOpen, onClose }) {
     const handleMouseMove = (e) => {
       if (isDragging) {
         setPosition({
-          x: Math.max(0, Math.min(window.innerWidth - 400, e.clientX - dragOffset.x)),
-          y: Math.max(0, Math.min(window.innerHeight - 500, e.clientY - dragOffset.y))
+          x: Math.max(0, Math.min(window.innerWidth - 380, e.clientX - dragOffset.x)),
+          y: Math.max(0, Math.min(window.innerHeight - 420, e.clientY - dragOffset.y))
         });
       }
     };
@@ -46,8 +50,8 @@ export default function SnakeGame({ isOpen, onClose }) {
       if (isDragging && e.touches[0]) {
         e.preventDefault();
         setPosition({
-          x: Math.max(0, Math.min(window.innerWidth - 400, e.touches[0].clientX - dragOffset.x)),
-          y: Math.max(0, Math.min(window.innerHeight - 500, e.touches[0].clientY - dragOffset.y))
+          x: Math.max(0, Math.min(window.innerWidth - 380, e.touches[0].clientX - dragOffset.x)),
+          y: Math.max(0, Math.min(window.innerHeight - 420, e.touches[0].clientY - dragOffset.y))
         });
       }
     };
@@ -75,7 +79,6 @@ export default function SnakeGame({ isOpen, onClose }) {
   }, [isDragging, dragOffset]);
 
   const handleMouseDown = (e) => {
-    if (!gameRef.current) return;
     const rect = gameRef.current.getBoundingClientRect();
     setDragOffset({
       x: e.clientX - rect.left,
@@ -85,7 +88,7 @@ export default function SnakeGame({ isOpen, onClose }) {
   };
 
   const handleTouchStart = (e) => {
-    if (e.touches[0] && gameRef.current) {
+    if (e.touches[0]) {
       const rect = gameRef.current.getBoundingClientRect();
       setDragOffset({
         x: e.touches[0].clientX - rect.left,
@@ -110,17 +113,18 @@ export default function SnakeGame({ isOpen, onClose }) {
     const startX = Math.floor(GRID_COUNT / 2);
     const startY = Math.floor(GRID_COUNT / 2);
     setSnake([{ x: startX, y: startY }]);
-    setFood({ x: startX - 5, y: startY });
+    setFood({ x: startX + 5, y: startY });
     setDirection({ x: 0, y: 0 });
     setNextDirection({ x: 0, y: 0 });
     setScore(0);
     setGameState('idle');
-    setGameSpeed(150);
   }, []);
 
   const startGame = useCallback(() => {
     if (gameState === 'idle') {
       resetGame();
+      setDirection({ x: 1, y: 0 });
+      setNextDirection({ x: 1, y: 0 });
     }
     setGameState('playing');
   }, [gameState, resetGame]);
@@ -142,12 +146,8 @@ export default function SnakeGame({ isOpen, onClose }) {
       head.y += nextDirection.y;
 
       if (head.x < 0 || head.x >= GRID_COUNT || 
-          head.y < 0 || head.y >= GRID_COUNT) {
-        setGameState('gameOver');
-        return prevSnake;
-      }
-
-      if (newSnake.some(segment => segment.x === head.x && segment.y === head.y)) {
+          head.y < 0 || head.y >= GRID_COUNT ||
+          newSnake.some(segment => segment.x === head.x && segment.y === head.y)) {
         setGameState('gameOver');
         return prevSnake;
       }
@@ -159,11 +159,12 @@ export default function SnakeGame({ isOpen, onClose }) {
           const newScore = prevScore + 10;
           if (newScore > highScore) {
             setHighScore(newScore);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('snake-high-score', newScore.toString());
+            }
           }
           return newScore;
         });
-        
-        setGameSpeed(prev => Math.max(80, prev - 2));
         setFood(generateFood());
       } else {
         newSnake.pop();
@@ -175,51 +176,82 @@ export default function SnakeGame({ isOpen, onClose }) {
 
   useEffect(() => {
     if (gameState === 'playing') {
-      gameLoopRef.current = setInterval(gameLoop, gameSpeed);
+      gameLoopRef.current = setInterval(gameLoop, 120);
     } else {
       clearInterval(gameLoopRef.current);
     }
 
     return () => clearInterval(gameLoopRef.current);
-  }, [gameState, gameLoop, gameSpeed]);
+  }, [gameState, gameLoop]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = '#0a0a0f';
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    for (let x = 0; x < GRID_COUNT; x++) {
+      for (let y = 0; y < GRID_COUNT; y++) {
+        ctx.strokeStyle = '#18181b';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+      }
+    }
+
+    snake.forEach((segment, index) => {
+      const isHead = index === 0;
+      ctx.fillStyle = isHead ? '#22c55e' : '#16a34a';
+      ctx.fillRect(
+        segment.x * GRID_SIZE + 1, 
+        segment.y * GRID_SIZE + 1, 
+        GRID_SIZE - 2, 
+        GRID_SIZE - 2
+      );
+      
+      if (isHead) {
+        ctx.fillStyle = '#15803d';
+        ctx.fillRect(
+          segment.x * GRID_SIZE + 4,
+          segment.y * GRID_SIZE + 4,
+          GRID_SIZE - 8,
+          GRID_SIZE - 8
+        );
+      }
+    });
+
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(food.x * GRID_SIZE + 1, food.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
+    
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(food.x * GRID_SIZE + 3, food.y * GRID_SIZE + 3, GRID_SIZE - 6, GRID_SIZE - 6);
+  }, [snake, food]);
 
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (gameState !== 'playing') return;
 
-      switch (e.key) {
-        case 'ArrowUp':
-        case 'w':
-        case 'W':
-          e.preventDefault();
-          if (direction.y !== 1) setNextDirection({ x: 0, y: -1 });
-          break;
-        case 'ArrowDown':
-        case 's':
-        case 'S':
-          e.preventDefault();
-          if (direction.y !== -1) setNextDirection({ x: 0, y: 1 });
-          break;
-        case 'ArrowLeft':
-        case 'a':
-        case 'A':
-          e.preventDefault();
-          if (direction.x !== 1) setNextDirection({ x: -1, y: 0 });
-          break;
-        case 'ArrowRight':
-        case 'd':
-        case 'D':
-          e.preventDefault();
-          if (direction.x !== -1) setNextDirection({ x: 1, y: 0 });
-          break;
-        case ' ':
-          e.preventDefault();
-          if (gameState === 'playing') {
-            pauseGame();
-          } else if (gameState === 'paused') {
-            startGame();
-          }
-          break;
+      const keyMap = {
+        'ArrowUp': { x: 0, y: -1 },
+        'ArrowDown': { x: 0, y: 1 },
+        'ArrowLeft': { x: -1, y: 0 },
+        'ArrowRight': { x: 1, y: 0 },
+        'w': { x: 0, y: -1 },
+        'W': { x: 0, y: -1 },
+        's': { x: 0, y: 1 },
+        'S': { x: 0, y: 1 },
+        'a': { x: -1, y: 0 },
+        'A': { x: -1, y: 0 },
+        'd': { x: 1, y: 0 },
+        'D': { x: 1, y: 0 }
+      };
+
+      const newDirection = keyMap[e.key];
+      if (newDirection && 
+          (newDirection.x !== -direction.x || newDirection.y !== -direction.y)) {
+        setNextDirection(newDirection);
       }
     };
 
@@ -230,131 +262,50 @@ export default function SnakeGame({ isOpen, onClose }) {
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [gameState, direction, showGame, startGame, pauseGame]);
+  }, [gameState, direction, showGame]);
 
-  const handleTouchGameStart = (e) => {
+  const handleCanvasTouchStart = (e) => {
+    if (gameState !== 'playing') return;
+    e.preventDefault();
     const touch = e.touches[0];
-    setTouchStart({ x: touch.clientX, y: touch.clientY });
+    const rect = canvasRef.current.getBoundingClientRect();
+    touchStartRef.current = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
   };
 
-  const handleTouchGameEnd = (e) => {
+  const handleCanvasTouchEnd = (e) => {
     if (gameState !== 'playing') return;
+    e.preventDefault();
     
     const touch = e.changedTouches[0];
-    const deltaX = touch.clientX - touchStart.x;
-    const deltaY = touch.clientY - touchStart.y;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const touchEnd = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+
+    const deltaX = touchEnd.x - touchStartRef.current.x;
+    const deltaY = touchEnd.y - touchStartRef.current.y;
     const minSwipeDistance = 30;
 
-    if (Math.abs(deltaX) < minSwipeDistance && Math.abs(deltaY) < minSwipeDistance) {
-      return;
-    }
-
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX > 0 && direction.x !== -1) {
-        setNextDirection({ x: 1, y: 0 });
-      } else if (deltaX < 0 && direction.x !== 1) {
-        setNextDirection({ x: -1, y: 0 });
+      if (Math.abs(deltaX) > minSwipeDistance) {
+        const newDirection = deltaX > 0 ? { x: 1, y: 0 } : { x: -1, y: 0 };
+        if (newDirection.x !== -direction.x) {
+          setNextDirection(newDirection);
+        }
       }
     } else {
-      if (deltaY > 0 && direction.y !== -1) {
-        setNextDirection({ x: 0, y: 1 });
-      } else if (deltaY < 0 && direction.y !== 1) {
-        setNextDirection({ x: 0, y: -1 });
+      if (Math.abs(deltaY) > minSwipeDistance) {
+        const newDirection = deltaY > 0 ? { x: 0, y: 1 } : { x: 0, y: -1 };
+        if (newDirection.y !== -direction.y) {
+          setNextDirection(newDirection);
+        }
       }
     }
   };
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    
-    const gradient = ctx.createLinearGradient(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    gradient.addColorStop(0, '#0f0f23');
-    gradient.addColorStop(1, '#1a1a2e');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= GRID_COUNT; i++) {
-      ctx.beginPath();
-      ctx.moveTo(i * GRID_SIZE, 0);
-      ctx.lineTo(i * GRID_SIZE, CANVAS_SIZE);
-      ctx.stroke();
-      
-      ctx.beginPath();
-      ctx.moveTo(0, i * GRID_SIZE);
-      ctx.lineTo(CANVAS_SIZE, i * GRID_SIZE);
-      ctx.stroke();
-    }
-
-    snake.forEach((segment, index) => {
-      const x = segment.x * GRID_SIZE;
-      const y = segment.y * GRID_SIZE;
-      
-      if (index === 0) {
-        ctx.shadowColor = '#00ff88';
-        ctx.shadowBlur = 15;
-        
-        const headGradient = ctx.createRadialGradient(
-          x + GRID_SIZE/2, y + GRID_SIZE/2, 0,
-          x + GRID_SIZE/2, y + GRID_SIZE/2, GRID_SIZE/2
-        );
-        headGradient.addColorStop(0, '#00ff88');
-        headGradient.addColorStop(1, '#00cc66');
-        
-        ctx.fillStyle = headGradient;
-        ctx.fillRect(x + 1, y + 1, GRID_SIZE - 2, GRID_SIZE - 2);
-        
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = '#000';
-        const eyeSize = 3;
-        const eyeOffset = 4;
-        ctx.fillRect(x + eyeOffset, y + eyeOffset, eyeSize, eyeSize);
-        ctx.fillRect(x + GRID_SIZE - eyeOffset - eyeSize, y + eyeOffset, eyeSize, eyeSize);
-      } else {
-        const opacity = Math.max(0.3, 1 - (index * 0.05));
-        ctx.shadowColor = '#00ff88';
-        ctx.shadowBlur = 5;
-        
-        const bodyGradient = ctx.createRadialGradient(
-          x + GRID_SIZE/2, y + GRID_SIZE/2, 0,
-          x + GRID_SIZE/2, y + GRID_SIZE/2, GRID_SIZE/2
-        );
-        bodyGradient.addColorStop(0, `rgba(0, 255, 136, ${opacity})`);
-        bodyGradient.addColorStop(1, `rgba(0, 150, 80, ${opacity})`);
-        
-        ctx.fillStyle = bodyGradient;
-        ctx.fillRect(x + 2, y + 2, GRID_SIZE - 4, GRID_SIZE - 4);
-      }
-    });
-
-    const foodX = food.x * GRID_SIZE;
-    const foodY = food.y * GRID_SIZE;
-    const pulse = Math.sin(Date.now() * 0.01) * 0.3 + 0.7;
-    
-    ctx.shadowColor = '#ff4444';
-    ctx.shadowBlur = 20 * pulse;
-    
-    const foodGradient = ctx.createRadialGradient(
-      foodX + GRID_SIZE/2, foodY + GRID_SIZE/2, 0,
-      foodX + GRID_SIZE/2, foodY + GRID_SIZE/2, GRID_SIZE/2
-    );
-    foodGradient.addColorStop(0, '#ff6666');
-    foodGradient.addColorStop(1, '#ff2222');
-    
-    ctx.fillStyle = foodGradient;
-    ctx.fillRect(foodX + 1, foodY + 1, GRID_SIZE - 2, GRID_SIZE - 2);
-    
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = `rgba(255, 255, 255, ${pulse})`;
-    ctx.fillRect(foodX + GRID_SIZE/2 - 1, foodY + 3, 2, 2);
-    ctx.fillRect(foodX + 3, foodY + GRID_SIZE/2 - 1, 2, 2);
-
-    ctx.shadowBlur = 0;
-  }, [snake, food]);
 
   const closeGame = () => {
     setGameClosing(true);
@@ -370,34 +321,32 @@ export default function SnakeGame({ isOpen, onClose }) {
   return (
     <div 
       ref={gameRef}
-      className={`absolute overflow-hidden rounded-lg border border-gray-700/50 shadow-2xl z-50 text-white ${
+      className={`absolute overflow-hidden rounded-lg border border-zinc-700/50 shadow-xl z-50 text-white ${
         gameClosing ? 'animate-terminal-close' : 'animate-terminal-open'
       }`}
       style={{
-        width: '400px',
+        width: '380px',
         top: `${position.y}px`,
         left: `${position.x}px`,
-        background: 'linear-gradient(135deg, rgba(15, 15, 35, 0.95), rgba(26, 26, 46, 0.95))',
-        backdropFilter: 'blur(12px)',
+        backgroundColor: 'rgba(10, 10, 15, 0.9)',
+        backdropFilter: 'blur(8px)',
       }}
     >
       <div 
-        className="flex items-center justify-between px-4 py-3 cursor-move border-b border-gray-700/50 bg-gradient-to-r from-gray-900/70 to-gray-800/70"
+        className="flex items-center justify-between px-3 py-2 cursor-move border-b border-zinc-700/50 bg-zinc-900/70"
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
       >
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-          <span className="text-sm font-semibold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-            🐍 Snake Game
-          </span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm">🐍</span>
+          <span className="text-xs font-mono text-gray-300">snake</span>
         </div>
         <button 
           onClick={(e) => {
             e.stopPropagation();
             closeGame();
           }}
-          className="text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-gray-700/50"
+          className="text-gray-400 hover:text-gray-200 transition-colors p-0.5"
         >
           <X className="w-4 h-4" />
         </button>
@@ -405,20 +354,13 @@ export default function SnakeGame({ isOpen, onClose }) {
       
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
-          <div className="text-center">
-            <div className="text-xs text-gray-400 mb-1">Score</div>
-            <div className="text-xl font-bold text-green-400">{score}</div>
+          <div className="text-sm font-mono">
+            <span className="text-gray-400">Score:</span>
+            <span className="text-white ml-2 font-bold">{score}</span>
           </div>
-          <div className="text-center">
-            <div className="text-xs text-gray-400 mb-1 flex items-center justify-center space-x-1">
-              <Trophy className="w-3 h-3" />
-              <span>Best</span>
-            </div>
-            <div className="text-xl font-bold text-yellow-400">{highScore}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xs text-gray-400 mb-1">Length</div>
-            <div className="text-xl font-bold text-blue-400">{snake.length}</div>
+          <div className="text-sm font-mono">
+            <span className="text-gray-400">Best:</span>
+            <span className="text-green-400 ml-2 font-bold">{highScore}</span>
           </div>
         </div>
 
@@ -427,68 +369,66 @@ export default function SnakeGame({ isOpen, onClose }) {
             ref={canvasRef}
             width={CANVAS_SIZE}
             height={CANVAS_SIZE}
-            className="border-2 border-gray-600/50 rounded-lg shadow-lg"
-            onTouchStart={handleTouchGameStart}
-            onTouchEnd={handleTouchGameEnd}
+            className="border border-zinc-700/50 rounded-md"
+            onTouchStart={handleCanvasTouchStart}
+            onTouchEnd={handleCanvasTouchEnd}
             style={{ touchAction: 'none' }}
           />
         </div>
 
-        <div className="flex justify-center space-x-3 mb-4">
+        <div className="flex justify-center gap-3 mb-4">
           {gameState === 'idle' || gameState === 'gameOver' ? (
             <button
               onClick={startGame}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-green-500/25"
+              className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-md text-sm transition-colors border border-zinc-600/50"
             >
               <Play className="w-4 h-4" />
-              <span>{gameState === 'gameOver' ? 'Play Again' : 'Start Game'}</span>
+              {gameState === 'gameOver' ? 'Play Again' : 'Start Game'}
             </button>
           ) : gameState === 'playing' ? (
             <button
               onClick={pauseGame}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-yellow-500/25"
+              className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-md text-sm transition-colors border border-zinc-600/50"
             >
               <Pause className="w-4 h-4" />
-              <span>Pause</span>
+              Pause
             </button>
           ) : (
             <button
               onClick={startGame}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
+              className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-md text-sm transition-colors border border-zinc-600/50"
             >
               <Play className="w-4 h-4" />
-              <span>Resume</span>
+              Resume
             </button>
           )}
           
           <button
             onClick={resetGame}
-            className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg"
+            className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-md text-sm transition-colors border border-zinc-600/50"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>Reset</span>
+            Reset
           </button>
         </div>
 
         {gameState === 'gameOver' && (
-          <div className="text-center mb-4 p-3 bg-gradient-to-r from-red-900/50 to-red-800/50 rounded-lg border border-red-500/30">
-            <div className="text-lg font-bold text-red-400 mb-1">Game Over!</div>
-            <div className="text-sm text-gray-300">
-              Final Score: <span className="text-green-400 font-semibold">{score}</span>
-            </div>
-            {score === highScore && score > 0 && (
-              <div className="text-xs text-yellow-400 mt-1 flex items-center justify-center space-x-1">
-                <Trophy className="w-3 h-3" />
-                <span>New High Score!</span>
-              </div>
-            )}
+          <div className="text-center text-sm text-red-400 mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-md">
+            <div className="font-semibold">Game Over!</div>
+            <div className="text-xs text-gray-400 mt-1">Final Score: {score}</div>
+          </div>
+        )}
+
+        {gameState === 'paused' && (
+          <div className="text-center text-sm text-yellow-400 mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
+            <div className="font-semibold">Game Paused</div>
+            <div className="text-xs text-gray-400 mt-1">Click Resume to continue</div>
           </div>
         )}
 
         <div className="text-xs text-gray-400 text-center space-y-1">
-          <div className="font-medium text-gray-300">Controls</div>
-          <div>🖱️ Desktop: Arrow keys, WASD, or Space to pause</div>
-          <div>📱 Mobile: Swipe to move, tap to start</div>
+          <div>Desktop: Use arrow keys or WASD</div>
+          <div>Mobile: Swipe on the game board</div>
         </div>
       </div>
     </div>
