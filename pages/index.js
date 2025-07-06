@@ -13,8 +13,40 @@ const MusicPlayer = dynamic(() => import('../components/MusicPlayer'), {
   ssr: false
 });
 
+const ContactPage = dynamic(() => import('../components/ContactPage'), {
+  ssr: false
+});
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return (
+          <div className="p-4">
+            <div className="mb-6">
+              <h1 className="font-proggy mb-0">czch</h1>
+              <p className="text-gray-400 text-xs leading-none">
+                full stack developer specializing in artifical intelligence
+              </p>
+            </div>
+            <DiscordStatus userId="1146944562951106721" />
+            <MusicPlayer />
+          </div>
+        );
+      case 'projects':
+        return (
+          <div className="p-4">
+            <div className="text-gray-400 text-xs">Projects coming soon...</div>
+          </div>
+        );
+      case 'contact':
+        return <ContactPage />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6">
@@ -47,17 +79,7 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="p-4">
-          <div className="mb-6">
-            <h1 className="font-proggy mb-0">czch</h1>
-            <p className="text-gray-400 text-xs leading-none">
-              full stack developer specializing in artifical intelligence
-            </p>
-          </div>
-
-          <DiscordStatus userId="1146944562951106721" />
-          <MusicPlayer />
-        </div>
+        {renderContent()}
       </div>
     </div>
   );
