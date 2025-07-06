@@ -20,40 +20,11 @@ const ContactPage = dynamic(() => import('../components/ContactPage'), {
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'home':
-        return (
-          <div className="p-4">
-            <div className="mb-6">
-              <h1 className="font-proggy mb-0">czch</h1>
-              <p className="text-gray-400 text-xs leading-none">
-                full stack developer specializing in artifical intelligence
-              </p>
-            </div>
-            <DiscordStatus userId="1146944562951106721" />
-            <MusicPlayer />
-          </div>
-        );
-      case 'projects':
-        return (
-          <div className="p-4 animate-slide-up">
-            <div className="text-gray-400 text-xs">Projects coming soon...</div>
-          </div>
-        );
-      case 'contact':
-        return <ContactPage />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6">
       <ParticleBackground />
       
       <div className="w-full max-w-md glass-card overflow-visible relative z-10">
-        {/* Single navigation bar */}
         <div className="flex justify-between p-2 border-b border-zinc-800/30">
           <div className="flex gap-1">
             <button 
@@ -80,8 +51,24 @@ export default function Home() {
           </button>
         </div>
         
-        {/* Tab content */}
-        {renderTabContent()}
+        <div className="p-4" style={{ display: activeTab === 'home' ? 'block' : 'none' }}>
+          <div className="mb-6">
+            <h1 className="font-proggy mb-0">czch</h1>
+            <p className="text-gray-400 text-xs leading-none">
+              full stack developer specializing in artifical intelligence
+            </p>
+          </div>
+          <DiscordStatus userId="1146944562951106721" />
+          <MusicPlayer />
+        </div>
+        
+        {activeTab === 'projects' && (
+          <div className="p-4 animate-slide-up">
+            <div className="text-gray-400 text-xs">Projects coming soon...</div>
+          </div>
+        )}
+        
+        {activeTab === 'contact' && <ContactPage />}
       </div>
     </div>
   );
