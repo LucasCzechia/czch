@@ -1,5 +1,4 @@
 import { ExternalLink } from 'lucide-react';
-import MusicPlayer from './MusicPlayer';
 
 export default function ProjectsPage() {
   return (
@@ -44,8 +43,6 @@ export default function ProjectsPage() {
           </div>
         </div>
       </div>
-      
-      <MusicPlayer />
     </div>
   );
 }
