@@ -5,7 +5,6 @@ export default function DiscordStatus({ userId }) {
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(Date.now());
 
-  // Update current time every second for real-time progress bars
   useEffect(() => {
     const timeInterval = setInterval(() => {
       setCurrentTime(Date.now());
@@ -21,7 +20,6 @@ export default function DiscordStatus({ userId }) {
         const data = await response.json();
         if (data.success) {
           setDiscordData(prevData => {
-            // Only update if data actually changed to prevent unnecessary re-renders
             if (JSON.stringify(prevData) !== JSON.stringify(data.data)) {
               return data.data;
             }
@@ -36,7 +34,7 @@ export default function DiscordStatus({ userId }) {
     };
 
     fetchDiscordStatus();
-    const interval = setInterval(fetchDiscordStatus, 1000); // Update every second
+    const interval = setInterval(fetchDiscordStatus, 1000);
 
     return () => clearInterval(interval);
   }, [userId]);
@@ -77,6 +75,17 @@ export default function DiscordStatus({ userId }) {
     return formatTime(elapsed);
   };
 
+  const getCustomStatus = () => {
+    const customStatus = discordData?.activities?.find(a => a.type === 4)?.state;
+    const isOffline = discordData?.discord_status === 'offline' || !discordData?.discord_status;
+    
+    if (isOffline || !customStatus) {
+      return null;
+    }
+    
+    return customStatus;
+  };
+
   if (loading) {
     return (
       <div className="status-card mb-6 p-2">
@@ -90,6 +99,8 @@ export default function DiscordStatus({ userId }) {
       </div>
     );
   }
+
+  const customStatus = getCustomStatus();
 
   return (
     <div className="status-card mb-6 p-2">
@@ -119,15 +130,15 @@ export default function DiscordStatus({ userId }) {
               <span className="absolute bottom-0 left-0 w-full h-px bg-gray-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
             </span>
           </a>
-          <span className="text-xs text-gray-400 truncate max-w-[180px]">
-            {discordData?.activities?.find(a => a.type === 4)?.state || 'vibing to some music'}
-          </span>
+          {customStatus && (
+            <span className="text-xs text-gray-400 truncate max-w-[180px]">
+              {customStatus}
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Activities */}
       <div className="mt-2 space-y-2">
-        {/* Spotify Activity */}
         {discordData?.listening_to_spotify && (
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -168,7 +179,6 @@ export default function DiscordStatus({ userId }) {
           </div>
         )}
 
-        {/* Other Activities */}
         {discordData?.activities?.filter(activity => activity.type === 0).map((activity, index) => (
           <div key={index} className="flex items-center gap-2">
             <div className="relative">
