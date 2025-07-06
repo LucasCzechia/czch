@@ -87,13 +87,23 @@ export default function DiscordStatus({ userId }) {
   };
 
   if (loading || hasError || !discordData) {
-    return null;
+    return (
+      <div className="status-card mb-6 p-2">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 bg-zinc-800 rounded-full animate-pulse"></div>
+          <div className="flex flex-col flex-1">
+            <div className="w-20 h-3 bg-zinc-800 rounded animate-pulse mb-1"></div>
+            <div className="w-32 h-2 bg-zinc-800 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const customStatus = getCustomStatus();
 
   return (
-    <div className="status-card mb-6 p-2 animate-fade-in">
+    <div className="status-card mb-6 p-2">
       <div className="flex items-center gap-2">
         <div className="relative">
           <div className="relative">
