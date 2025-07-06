@@ -11,15 +11,31 @@ export default function Terminal({ isOpen, onClose }) {
   const [position, setPosition] = useState({ x: 20, y: 60 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [terminalClosing, setTerminalClosing] = useState(false);
+  const [minimizeAnimating, setMinimizeAnimating] = useState(false);
+  const [showTerminal, setShowTerminal] = useState(false);
   const inputRef = useRef(null);
   const historyRef = useRef(null);
   const terminalRef = useRef(null);
 
   useEffect(() => {
-    if (isOpen && !isMinimized && inputRef.current) {
+    if (isOpen && !showTerminal) {
+      setShowTerminal(true);
+      setTerminalClosing(false);
+    } else if (!isOpen && showTerminal) {
+      setTerminalClosing(true);
+      setTimeout(() => {
+        setShowTerminal(false);
+        setTerminalClosing(false);
+      }, 300);
+    }
+  }, [isOpen, showTerminal]);
+
+  useEffect(() => {
+    if (showTerminal && !isMinimized && !terminalClosing && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isOpen, isMinimized]);
+  }, [showTerminal, isMinimized, terminalClosing]);
 
   useEffect(() => {
     if (historyRef.current) {
@@ -217,11 +233,11 @@ export default function Terminal({ isOpen, onClose }) {
         break;
 
       case 'close':
-        onClose();
+        closeTerminal();
         break;
 
       case 'minimize':
-        setIsMinimized(true);
+        minimizeTerminal();
         break;
 
       case 'echo':
@@ -263,14 +279,31 @@ Type 'help' for commands`
     }
   };
 
-  if (!isOpen) return null;
+  const closeTerminal = () => {
+    setTerminalClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
+  const minimizeTerminal = () => {
+    setMinimizeAnimating(true);
+    setTimeout(() => {
+      setIsMinimized(!isMinimized);
+      setMinimizeAnimating(false);
+    }, 200);
+  };
+
+  if (!showTerminal) return null;
 
   const theme = getTerminalTheme(terminalColor);
 
   return (
     <div 
       ref={terminalRef}
-      className={`absolute overflow-hidden rounded-md border shadow-lg z-50 ${theme.border} ${theme.text}`}
+      className={`absolute overflow-hidden rounded-md border shadow-lg z-50 ${theme.border} ${theme.text} ${
+        terminalClosing ? 'animate-terminal-close' : 'animate-terminal-open'
+      } ${minimizeAnimating ? 'animate-terminal-minimize' : ''}`}
       style={{
         width: '90%',
         maxWidth: '350px',
@@ -294,7 +327,7 @@ Type 'help' for commands`
           <button 
             onClick={(e) => {
               e.stopPropagation();
-              setIsMinimized(!isMinimized);
+              minimizeTerminal();
             }}
             className={`transition-colors p-0.5 ${terminalColor === 'white' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-400 hover:text-gray-200'}`}
           >
@@ -303,7 +336,7 @@ Type 'help' for commands`
           <button 
             onClick={(e) => {
               e.stopPropagation();
-              onClose();
+              closeTerminal();
             }}
             className={`transition-colors p-0.5 ${terminalColor === 'white' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-400 hover:text-gray-200'}`}
           >
@@ -313,7 +346,7 @@ Type 'help' for commands`
       </div>
       
       {!isMinimized && (
-        <div className="flex flex-col" style={{ height: 'calc(250px - 32px)' }}>
+        <div className={`flex flex-col ${minimizeAnimating ? 'animate-fade-out' : 'animate-fade-in'}`} style={{ height: 'calc(250px - 32px)' }}>
           <div 
             ref={historyRef}
             className="flex-1 overflow-y-auto p-2 font-mono text-xs space-y-1"
