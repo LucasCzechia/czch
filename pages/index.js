@@ -33,10 +33,24 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [snakeOpen, setSnakeOpen] = useState(false);
+  const [audioState, setAudioState] = useState({
+    isPlaying: false,
+    audioElement: null,
+    currentTime: 0,
+    duration: 0,
+    volume: 50
+  });
+
+  const handleAudioStateChange = (newAudioState) => {
+    setAudioState(newAudioState);
+  };
 
   return (
     <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6" style={{ alignItems: 'center', transform: 'translateY(-2rem)' }}>
-      <ParticleBackground />
+      <ParticleBackground 
+        isPlaying={audioState.isPlaying} 
+        audioElement={audioState.audioElement}
+      />
       
       <div className="w-full max-w-md glass-card overflow-visible relative z-10">
         <div className="flex justify-between p-2 border-b border-zinc-800/30">
@@ -83,7 +97,7 @@ export default function Home() {
         {activeTab === 'contact' && <ContactPage />}
         
         <div className="px-4 pb-4">
-          <MusicPlayer />
+          <MusicPlayer onAudioStateChange={handleAudioStateChange} />
         </div>
       </div>
       
