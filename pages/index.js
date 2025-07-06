@@ -1,7 +1,17 @@
 import { useState } from 'react';
-import ParticleBackground from '../components/ParticleBackground';
-import DiscordStatus from '../components/DiscordStatus';
-import MusicPlayer from '../components/MusicPlayer';
+import dynamic from 'next/dynamic';
+
+const ParticleBackground = dynamic(() => import('../components/ParticleBackground'), {
+  ssr: false
+});
+
+const DiscordStatus = dynamic(() => import('../components/DiscordStatus'), {
+  ssr: false
+});
+
+const MusicPlayer = dynamic(() => import('../components/MusicPlayer'), {
+  ssr: false
+});
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
@@ -11,7 +21,6 @@ export default function Home() {
       <ParticleBackground />
       
       <div className="w-full max-w-md glass-card overflow-visible relative z-10">
-        {/* Header Navigation */}
         <div className="flex justify-between p-2 border-b border-zinc-800/30">
           <div className="flex gap-1">
             <button 
@@ -39,18 +48,14 @@ export default function Home() {
         </div>
 
         <div className="p-4">
-          {/* Main Header */}
           <div className="mb-6">
             <h1 className="font-proggy mb-0">czch</h1>
             <p className="text-gray-400 text-xs leading-none">
-              full stack developer specializing in modern web technologies
+              full stack developer specializing in artifical intelligence
             </p>
           </div>
 
-          {/* Discord Status Section */}
           <DiscordStatus userId="1146944562951106721" />
-
-          {/* Music Player Section */}
           <MusicPlayer />
         </div>
       </div>
