@@ -2,7 +2,7 @@ import { Mail } from 'lucide-react';
 
 export default function ContactPage() {
   return (
-    <div className="p-4">
+    <div className="pt-4 px-4">
       <div className="space-y-2 animate-slide-up">
         <div className="flex items-center gap-2 text-gray-400">
           <svg className="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
