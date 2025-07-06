@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { HelpCircle, Minus, X } from 'lucide-react';
 
-export default function Terminal({ isOpen, onClose }) {
+export default function Terminal({ isOpen, onClose, onOpenSnake }) {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([
     { type: 'system', content: 'Terminal v1.0.0 - Type "help" for available commands' }
@@ -244,7 +244,10 @@ export default function Terminal({ isOpen, onClose }) {
         break;
 
       case 'snake':
-        setHistory(prev => [...prev, { type: 'output', content: '🐍 Snake game coming soon! Use arrow keys when implemented.' }]);
+        setHistory(prev => [...prev, { type: 'output', content: '🐍 Opening Snake game...' }]);
+        if (onOpenSnake) {
+          onOpenSnake();
+        }
         break;
 
       case 'about':
