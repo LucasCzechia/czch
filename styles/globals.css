@@ -73,14 +73,11 @@ body {
 @keyframes bounce-slide {
   0% {
     opacity: 0;
-    transform: translateY(-50%) translateY(0px);
-  }
-  30% {
-    opacity: 1;
-    transform: translateY(-50%) translateY(-8px);
+    transform: translateY(-50%) translateY(12px);
   }
   60% {
-    transform: translateY(-50%) translateY(2px);
+    opacity: 1;
+    transform: translateY(-50%) translateY(-6px);
   }
   100% {
     opacity: 1;
@@ -89,7 +86,7 @@ body {
 }
 
 .animate-bounce-slide {
-  animation: bounce-slide 0.5s ease-out;
+  animation: bounce-slide 0.6s ease-out;
 }
 
 * {
