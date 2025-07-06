@@ -17,6 +17,10 @@ const ContactPage = dynamic(() => import('../components/ContactPage'), {
   ssr: false
 });
 
+const ProjectsPage = dynamic(() => import('../components/ProjectsPage'), {
+  ssr: false
+});
+
 const Terminal = dynamic(() => import('../components/Terminal'), {
   ssr: false
 });
@@ -70,11 +74,7 @@ export default function Home() {
           <MusicPlayer />
         </div>
         
-        {activeTab === 'projects' && (
-          <div className="p-4 animate-slide-up">
-            <div className="text-gray-400 text-xs">Projects coming soon...</div>
-          </div>
-        )}
+        {activeTab === 'projects' && <ProjectsPage />}
         
         {activeTab === 'contact' && <ContactPage />}
       </div>
