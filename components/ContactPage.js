@@ -1,5 +1,4 @@
 import { Mail } from 'lucide-react';
-import MusicPlayer from './MusicPlayer';
 
 export default function ContactPage() {
   return (
@@ -43,8 +42,6 @@ export default function ContactPage() {
           </a>
         </div>
       </div>
-      
-      <MusicPlayer />
     </div>
   );
 }
