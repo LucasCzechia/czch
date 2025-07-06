@@ -4,17 +4,20 @@ import { X, Play, Pause, RotateCcw } from 'lucide-react';
 export default function SnakeGame({ isOpen, onClose }) {
   const [gameState, setGameState] = useState('idle');
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(() => {
+  const [highScore, setHighScore] = useState(0);
+
+  useEffect(() => {
     if (typeof window !== 'undefined') {
-      return parseInt(localStorage.getItem('snakeHighScore') || '0');
+      const savedHighScore = localStorage.getItem('snakeHighScore');
+      if (savedHighScore) {
+        setHighScore(parseInt(savedHighScore));
+      }
     }
-    return 0;
-  });
+  }, []);
   const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
   const [food, setFood] = useState({ x: 5, y: 5 });
   const [direction, setDirection] = useState({ x: 0, y: 0 });
   const [gameClosing, setGameClosing] = useState(false);
-  const [showGame, setShowGame] = useState(false);
 
   const gameRef = useRef(null);
   const canvasRef = useRef(null);
@@ -24,13 +27,6 @@ export default function SnakeGame({ isOpen, onClose }) {
   const GRID_SIZE = 15;
   const CANVAS_SIZE = 450;
   const GRID_COUNT = CANVAS_SIZE / GRID_SIZE;
-
-  useEffect(() => {
-    if (isOpen && !showGame) {
-      setShowGame(true);
-      setGameClosing(false);
-    }
-  }, [isOpen, showGame]);
 
   const generateFood = useCallback(() => {
     let newFood;
@@ -207,14 +203,14 @@ export default function SnakeGame({ isOpen, onClose }) {
       }
     };
 
-    if (showGame) {
+    if (isOpen) {
       window.addEventListener('keydown', handleKeyPress);
     }
 
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [gameState, direction, showGame]);
+  }, [gameState, direction, isOpen]);
 
   const handleTouchStart = (e) => {
     if (e.touches[0]) {
@@ -260,12 +256,11 @@ export default function SnakeGame({ isOpen, onClose }) {
     setGameClosing(true);
     setGameState('idle');
     setTimeout(() => {
-      setShowGame(false);
       onClose();
     }, 300);
   };
 
-  if (!showGame) return null;
+  if (!isOpen) return null;
 
   return (
     <div 
