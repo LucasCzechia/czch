@@ -63,7 +63,7 @@ export default function Home() {
           </button>
         </div>
         
-        <div className="p-4" style={{ display: activeTab === 'home' ? 'block' : 'none' }}>
+        <div className="pt-4 px-4" style={{ display: activeTab === 'home' ? 'block' : 'none' }}>
           <div className="mb-6">
             <h1 className="font-proggy mb-0">czch</h1>
             <p className="text-gray-400 text-xs leading-none">
