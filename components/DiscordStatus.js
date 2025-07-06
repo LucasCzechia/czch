@@ -89,7 +89,7 @@ export default function DiscordStatus({ userId }) {
   if (loading) {
     return (
       <div className="status-card mb-6 p-2">
-        <div className="flex items-center gap-2">
+        <div className={`flex gap-2 ${customStatus ? 'items-start' : 'items-center'}`}>
           <div className="w-7 h-7 bg-zinc-800 rounded-full animate-pulse"></div>
           <div className="flex flex-col flex-1">
             <div className="w-20 h-3 bg-zinc-800 rounded animate-pulse mb-1"></div>
@@ -119,19 +119,19 @@ export default function DiscordStatus({ userId }) {
           <div className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-zinc-900 ${getStatusColor(discordData?.discord_status)}`}></div>
         </div>
         {customStatus ? (
-          <div className="flex flex-col">
+          <div className="flex flex-col justify-center">
             <a 
               href={`https://discord.com/users/${discordData?.discord_user?.id || userId}`}
               target="_blank" 
               rel="noopener noreferrer" 
-              className="group text-xs text-gray-200 w-fit"
+              className="group text-xs text-gray-200 w-fit leading-tight"
             >
               <span className="relative">
                 {discordData?.discord_user?.username || 'czch'}
                 <span className="absolute bottom-0 left-0 w-full h-px bg-gray-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
               </span>
             </a>
-            <span className="text-xs text-gray-400 truncate max-w-[180px]">
+            <span className="text-xs text-gray-400 truncate max-w-[180px] leading-tight">
               {customStatus}
             </span>
           </div>
