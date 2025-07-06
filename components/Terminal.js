@@ -12,7 +12,7 @@ export default function Terminal({ isOpen, onClose }) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [terminalClosing, setTerminalClosing] = useState(false);
-  const [minimizeAnimating, setMinimizeAnimating] = useState(false);
+
   const [showTerminal, setShowTerminal] = useState(false);
   const inputRef = useRef(null);
   const historyRef = useRef(null);
@@ -22,12 +22,6 @@ export default function Terminal({ isOpen, onClose }) {
     if (isOpen && !showTerminal) {
       setShowTerminal(true);
       setTerminalClosing(false);
-    } else if (!isOpen && showTerminal) {
-      setTerminalClosing(true);
-      setTimeout(() => {
-        setShowTerminal(false);
-        setTerminalClosing(false);
-      }, 300);
     }
   }, [isOpen, showTerminal]);
 
@@ -282,16 +276,13 @@ Type 'help' for commands`
   const closeTerminal = () => {
     setTerminalClosing(true);
     setTimeout(() => {
+      setShowTerminal(false);
       onClose();
     }, 300);
   };
 
   const minimizeTerminal = () => {
-    setMinimizeAnimating(true);
-    setTimeout(() => {
-      setIsMinimized(!isMinimized);
-      setMinimizeAnimating(false);
-    }, 200);
+    setIsMinimized(!isMinimized);
   };
 
   if (!showTerminal) return null;
@@ -303,7 +294,7 @@ Type 'help' for commands`
       ref={terminalRef}
       className={`absolute overflow-hidden rounded-md border shadow-lg z-50 ${theme.border} ${theme.text} ${
         terminalClosing ? 'animate-terminal-close' : 'animate-terminal-open'
-      } ${minimizeAnimating ? 'animate-terminal-minimize' : ''}`}
+      }`}
       style={{
         width: '90%',
         maxWidth: '350px',
@@ -346,7 +337,7 @@ Type 'help' for commands`
       </div>
       
       {!isMinimized && (
-        <div className={`flex flex-col ${minimizeAnimating ? 'animate-fade-out' : 'animate-fade-in'}`} style={{ height: 'calc(250px - 32px)' }}>
+        <div className="flex flex-col" style={{ height: 'calc(250px - 32px)' }}>
           <div 
             ref={historyRef}
             className="flex-1 overflow-y-auto p-2 font-mono text-xs space-y-1"
