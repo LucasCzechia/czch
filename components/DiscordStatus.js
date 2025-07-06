@@ -89,7 +89,7 @@ export default function DiscordStatus({ userId }) {
   if (loading) {
     return (
       <div className="status-card mb-6 p-2">
-        <div className={`flex gap-2 ${customStatus ? 'items-start' : 'items-center'}`}>
+        <div className="flex gap-2 items-center">
           <div className="w-7 h-7 bg-zinc-800 rounded-full animate-pulse"></div>
           <div className="flex flex-col flex-1">
             <div className="w-20 h-3 bg-zinc-800 rounded animate-pulse mb-1"></div>
@@ -229,4 +229,4 @@ export default function DiscordStatus({ userId }) {
       </div>
     </div>
   );
-}
+         }
