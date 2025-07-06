@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, X, Download, Share2, Check } from 'lucide-react';
 
-export default function MusicPlayer() {
-  const PLAYLIST = [
-    {
-      title: 'пачка сигарет - instrumental',
-      artist: 'operra, verana',
-      folder: 'pachka-sigaret',
-      spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw'
-    }
-  ];
+const PLAYLIST = [
+  {
+    title: 'пачка сигарет - instrumental',
+    artist: 'operra, verana',
+    folder: 'pachka-sigaret',
+    spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw'
+  }
+];
 
+export default function MusicPlayer() {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -18,13 +18,12 @@ export default function MusicPlayer() {
   const [volume, setVolume] = useState(50);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [modalClosing, setModalClosing] = useState(false);
   const [showCopiedNotification, setShowCopiedNotification] = useState(false);
   const [copiedAnimatingOut, setCopiedAnimatingOut] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const audioRef = useRef(null);
 
-  const currentSong = PLAYLIST[currentSongIndex] || PLAYLIST[0];
+  const currentSong = PLAYLIST[currentSongIndex];
   const audioSrc = `/assets/audio/${currentSong.folder}/${currentSong.folder}.mp3`;
   const thumbnailSrc = `/assets/audio/${currentSong.folder}/thumbnail.png`;
 
@@ -173,20 +172,6 @@ export default function MusicPlayer() {
     }
   };
 
-  const closeModal = () => {
-    setModalClosing(true);
-    setTimeout(() => {
-      setShowModal(false);
-      setModalClosing(false);
-    }, 300);
-  };
-
-  const handleModalBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      closeModal();
-    }
-  };
-
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
@@ -295,13 +280,10 @@ export default function MusicPlayer() {
       </div>
 
       {showModal && (
-        <div 
-          className={`fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 ${modalClosing ? 'animate-modal-fade-out' : 'animate-modal-fade-in'}`}
-          onClick={handleModalBackdropClick}
-        >
-          <div className={`bg-black/90 border border-zinc-800/30 rounded-lg p-4 max-w-xs w-full relative overflow-visible ${modalClosing ? 'animate-modal-scale-out' : 'animate-modal-scale-in'}`}>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-black/90 border border-zinc-800/30 rounded-lg p-4 max-w-xs w-full relative overflow-visible">
             <button 
-              onClick={closeModal}
+              onClick={() => setShowModal(false)}
               className="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors"
             >
               <X size={16} />
@@ -363,7 +345,6 @@ export default function MusicPlayer() {
                       onClick={() => {
                         setCurrentSongIndex(index);
                         setCurrentTime(0);
-                        closeModal();
                       }}
                     >
                       <span className="w-4 text-center">{index + 1}</span>
