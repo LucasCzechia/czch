@@ -17,8 +17,13 @@ const ContactPage = dynamic(() => import('../components/ContactPage'), {
   ssr: false
 });
 
+const Terminal = dynamic(() => import('../components/Terminal'), {
+  ssr: false
+});
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   return (
     <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6" style={{ alignItems: 'center', transform: 'translateY(-2rem)' }}>
@@ -46,7 +51,10 @@ export default function Home() {
               contact
             </button>
           </div>
-          <button className="px-2 text-xs text-gray-400 hover:text-white transition-colors">
+          <button 
+            onClick={() => setTerminalOpen(!terminalOpen)}
+            className="px-2 text-xs text-gray-400 hover:text-white transition-colors"
+          >
             [?]
           </button>
         </div>
@@ -70,6 +78,8 @@ export default function Home() {
         
         {activeTab === 'contact' && <ContactPage />}
       </div>
+      
+      <Terminal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
     </div>
   );
 }
