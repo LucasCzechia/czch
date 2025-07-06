@@ -71,12 +71,15 @@ export default function Home() {
             </p>
           </div>
           <DiscordStatus userId="1146944562951106721" />
-          <MusicPlayer />
         </div>
         
         {activeTab === 'projects' && <ProjectsPage />}
         
         {activeTab === 'contact' && <ContactPage />}
+        
+        <div className="px-4 pb-4">
+          <MusicPlayer />
+        </div>
       </div>
       
       <Terminal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
