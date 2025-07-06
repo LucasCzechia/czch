@@ -7,7 +7,7 @@ export default function Terminal({ isOpen, onClose }) {
     { type: 'system', content: 'Terminal v1.0.0 - Type "help" for available commands' }
   ]);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [terminalColor, setTerminalColor] = useState('green');
+  const [terminalColor, setTerminalColor] = useState('black');
   const [position, setPosition] = useState({ x: 20, y: 60 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -96,6 +96,8 @@ export default function Terminal({ isOpen, onClose }) {
 
   const getColorClass = (color) => {
     const colors = {
+      black: 'text-gray-400',
+      white: 'text-gray-800',
       green: 'text-green-500',
       blue: 'text-blue-500',
       red: 'text-red-500',
@@ -104,48 +106,67 @@ export default function Terminal({ isOpen, onClose }) {
       cyan: 'text-cyan-500',
       pink: 'text-pink-500'
     };
-    return colors[color] || 'text-green-500';
+    return colors[color] || 'text-gray-400';
   };
 
   const getTerminalTheme = (color) => {
     const themes = {
+      black: {
+        bg: 'rgba(10, 10, 15, 0.8)',
+        border: 'border-zinc-700/50',
+        header: 'bg-zinc-900/70',
+        text: 'text-white'
+      },
+      white: {
+        bg: 'rgba(255, 255, 255, 0.9)',
+        border: 'border-gray-300/50',
+        header: 'bg-gray-100/70',
+        text: 'text-black'
+      },
       green: {
         bg: 'rgba(10, 15, 10, 0.8)',
         border: 'border-green-700/50',
-        header: 'bg-green-900/70'
+        header: 'bg-green-900/70',
+        text: 'text-white'
       },
       blue: {
         bg: 'rgba(10, 10, 15, 0.8)',
         border: 'border-blue-700/50',
-        header: 'bg-blue-900/70'
+        header: 'bg-blue-900/70',
+        text: 'text-white'
       },
       red: {
         bg: 'rgba(15, 10, 10, 0.8)',
         border: 'border-red-700/50',
-        header: 'bg-red-900/70'
+        header: 'bg-red-900/70',
+        text: 'text-white'
       },
       yellow: {
         bg: 'rgba(15, 15, 10, 0.8)',
         border: 'border-yellow-700/50',
-        header: 'bg-yellow-900/70'
+        header: 'bg-yellow-900/70',
+        text: 'text-white'
       },
       purple: {
         bg: 'rgba(15, 10, 15, 0.8)',
         border: 'border-purple-700/50',
-        header: 'bg-purple-900/70'
+        header: 'bg-purple-900/70',
+        text: 'text-white'
       },
       cyan: {
         bg: 'rgba(10, 15, 15, 0.8)',
         border: 'border-cyan-700/50',
-        header: 'bg-cyan-900/70'
+        header: 'bg-cyan-900/70',
+        text: 'text-white'
       },
       pink: {
         bg: 'rgba(15, 10, 13, 0.8)',
         border: 'border-pink-700/50',
-        header: 'bg-pink-900/70'
+        header: 'bg-pink-900/70',
+        text: 'text-white'
       }
     };
-    return themes[color] || themes.green;
+    return themes[color] || themes.black;
   };
 
   const executeCommand = (cmd) => {
@@ -183,7 +204,7 @@ export default function Terminal({ isOpen, onClose }) {
       case 'color':
         if (args.length > 0) {
           const color = args[0].toLowerCase();
-          const validColors = ['green', 'blue', 'red', 'yellow', 'purple', 'cyan', 'pink'];
+          const validColors = ['black', 'white', 'green', 'blue', 'red', 'yellow', 'purple', 'cyan', 'pink'];
           if (validColors.includes(color)) {
             setTerminalColor(color);
             setHistory(prev => [...prev, { type: 'output', content: `Terminal theme changed to ${color}` }]);
@@ -191,7 +212,7 @@ export default function Terminal({ isOpen, onClose }) {
             setHistory(prev => [...prev, { type: 'error', content: `Error: Invalid color "${color}". Available: ${validColors.join(', ')}` }]);
           }
         } else {
-          setHistory(prev => [...prev, { type: 'error', content: 'Error: Missing color parameter. Usage: color [green|blue|red|yellow|purple|cyan|pink]' }]);
+          setHistory(prev => [...prev, { type: 'error', content: 'Error: Missing color parameter. Usage: color [black|white|green|blue|red|yellow|purple|cyan|pink]' }]);
         }
         break;
 
@@ -249,7 +270,7 @@ Type 'help' for commands`
   return (
     <div 
       ref={terminalRef}
-      className={`absolute overflow-hidden text-white rounded-md border shadow-lg z-50 ${theme.border}`}
+      className={`absolute overflow-hidden rounded-md border shadow-lg z-50 ${theme.border} ${theme.text}`}
       style={{
         width: '90%',
         maxWidth: '350px',
@@ -306,12 +327,12 @@ Type 'help' for commands`
                   </div>
                 )}
                 {entry.type === 'output' && (
-                  <div className="whitespace-pre-wrap text-gray-300 ml-3">
+                  <div className={`whitespace-pre-wrap ml-3 ${terminalColor === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
                     {entry.content}
                   </div>
                 )}
                 {entry.type === 'system' && (
-                  <div className="whitespace-pre-wrap text-gray-300">
+                  <div className={`whitespace-pre-wrap ${terminalColor === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
                     {entry.content}
                   </div>
                 )}
@@ -324,7 +345,7 @@ Type 'help' for commands`
             ))}
           </div>
           
-          <div className="p-2 border-t border-zinc-700/30">
+          <div className={`p-2 border-t ${terminalColor === 'white' ? 'border-gray-300/50' : 'border-zinc-700/30'}`}>
             <form onSubmit={handleSubmit} className="flex items-center">
               <span className={`mr-1 text-xs font-mono ${getColorClass(terminalColor)}`}>$</span>
               <input
@@ -332,7 +353,7 @@ Type 'help' for commands`
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-white font-mono text-xs"
+                className={`flex-1 bg-transparent border-none outline-none font-mono text-xs ${terminalColor === 'white' ? 'text-black placeholder-gray-500' : 'text-white placeholder-gray-400'}`}
                 placeholder="Type a command..."
                 autoComplete="off"
               />
