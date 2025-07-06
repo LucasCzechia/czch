@@ -21,10 +21,19 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
 
   return (
-    <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6">
+    <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex flex-col items-center justify-center p-6">
       <ParticleBackground />
       
-      <div className="w-full max-w-md glass-card overflow-visible relative z-10">
+      <div className="fixed top-0 left-0 right-0 z-20 flex justify-between items-center p-4">
+        <h1 className="font-proggy text-white text-lg">czch</h1>
+        <div className="flex items-center gap-2 text-gray-400 text-xs">
+          <span>[_]</span>
+          <span>[□]</span>
+          <span>[×]</span>
+        </div>
+      </div>
+      
+      <div className="w-full max-w-md glass-card overflow-visible relative z-10 mt-16">
         <div className="flex justify-between p-2 border-b border-zinc-800/30">
           <div className="flex gap-1">
             <button 
