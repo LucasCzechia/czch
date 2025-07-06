@@ -91,6 +91,15 @@ body {
   }
 }
 
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes slide-up {
   0% {
     opacity: 0;
@@ -104,6 +113,10 @@ body {
 
 .animate-fade-in {
   animation: fade-in 0.5s ease-out;
+}
+
+.animate-fade-out {
+  animation: fade-out 0.3s ease-in;
 }
 
 .animate-slide-up {
@@ -176,6 +189,40 @@ body {
   }
 }
 
+@keyframes terminal-open {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+  }
+}
+
+@keyframes terminal-close {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+}
+
+@keyframes terminal-minimize {
+  0% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.8);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
 .animate-bounce-slide {
   animation: bounce-slide 0.6s ease-out;
 }
@@ -198,6 +245,18 @@ body {
 
 .animate-modal-scale-out {
   animation: modal-scale-out 0.3s ease-in;
+}
+
+.animate-terminal-open {
+  animation: terminal-open 0.4s ease-out;
+}
+
+.animate-terminal-close {
+  animation: terminal-close 0.3s ease-in;
+}
+
+.animate-terminal-minimize {
+  animation: terminal-minimize 0.2s ease-in-out;
 }
 
 .progress-bar {
