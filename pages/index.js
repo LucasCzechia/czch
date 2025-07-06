@@ -51,7 +51,7 @@ export default function Home() {
           <div className="mb-6">
             <h1 className="font-proggy mb-0">czch</h1>
             <p className="text-gray-400 text-xs leading-none">
-              full stack developer specializing in artifical intelligence
+              full stack developer specializing in modern web technologies
             </p>
           </div>
 
