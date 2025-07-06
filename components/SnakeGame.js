@@ -25,8 +25,8 @@ export default function SnakeGame({ isOpen, onClose }) {
   const gameLoopRef = useRef(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
 
-  const GRID_SIZE = 15;
-  const CANVAS_SIZE = 300;
+  const GRID_SIZE = 12;
+  const CANVAS_SIZE = 240;
   const GRID_COUNT = CANVAS_SIZE / GRID_SIZE;
 
   useEffect(() => {
@@ -40,8 +40,8 @@ export default function SnakeGame({ isOpen, onClose }) {
     const handleMouseMove = (e) => {
       if (isDragging) {
         setPosition({
-          x: Math.max(0, Math.min(window.innerWidth - 380, e.clientX - dragOffset.x)),
-          y: Math.max(0, Math.min(window.innerHeight - 420, e.clientY - dragOffset.y))
+          x: Math.max(0, Math.min(window.innerWidth - 320, e.clientX - dragOffset.x)),
+          y: Math.max(0, Math.min(window.innerHeight - 360, e.clientY - dragOffset.y))
         });
       }
     };
@@ -50,8 +50,8 @@ export default function SnakeGame({ isOpen, onClose }) {
       if (isDragging && e.touches[0]) {
         e.preventDefault();
         setPosition({
-          x: Math.max(0, Math.min(window.innerWidth - 380, e.touches[0].clientX - dragOffset.x)),
-          y: Math.max(0, Math.min(window.innerHeight - 420, e.touches[0].clientY - dragOffset.y))
+          x: Math.max(0, Math.min(window.innerWidth - 320, e.touches[0].clientX - dragOffset.x)),
+          y: Math.max(0, Math.min(window.innerHeight - 360, e.touches[0].clientY - dragOffset.y))
         });
       }
     };
@@ -325,7 +325,7 @@ export default function SnakeGame({ isOpen, onClose }) {
         gameClosing ? 'animate-terminal-close' : 'animate-terminal-open'
       }`}
       style={{
-        width: '380px',
+        width: '320px',
         top: `${position.y}px`,
         left: `${position.x}px`,
         backgroundColor: 'rgba(10, 10, 15, 0.9)',
@@ -352,85 +352,83 @@ export default function SnakeGame({ isOpen, onClose }) {
         </button>
       </div>
       
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="text-sm font-mono">
+      <div className="p-3">
+        <div className="flex justify-between items-center mb-3">
+          <div className="text-xs">
             <span className="text-gray-400">Score:</span>
-            <span className="text-white ml-2 font-bold">{score}</span>
+            <span className="text-white ml-1">{score}</span>
           </div>
-          <div className="text-sm font-mono">
+          <div className="text-xs">
             <span className="text-gray-400">Best:</span>
-            <span className="text-green-400 ml-2 font-bold">{highScore}</span>
+            <span className="text-green-400 ml-1">{highScore}</span>
           </div>
         </div>
 
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-3">
           <canvas
             ref={canvasRef}
             width={CANVAS_SIZE}
             height={CANVAS_SIZE}
-            className="border border-zinc-700/50 rounded-md"
+            className="border border-zinc-700/50 rounded"
             onTouchStart={handleCanvasTouchStart}
             onTouchEnd={handleCanvasTouchEnd}
             style={{ touchAction: 'none' }}
           />
         </div>
 
-        <div className="flex justify-center gap-3 mb-4">
+        <div className="flex justify-center gap-2 mb-3">
           {gameState === 'idle' || gameState === 'gameOver' ? (
             <button
               onClick={startGame}
-              className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-md text-sm transition-colors border border-zinc-600/50"
+              className="flex items-center gap-1 px-3 py-1 bg-zinc-800 hover:bg-zinc-700 rounded text-xs transition-colors"
             >
-              <Play className="w-4 h-4" />
-              {gameState === 'gameOver' ? 'Play Again' : 'Start Game'}
+              <Play className="w-3 h-3" />
+              {gameState === 'gameOver' ? 'Restart' : 'Start'}
             </button>
           ) : gameState === 'playing' ? (
             <button
               onClick={pauseGame}
-              className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-md text-sm transition-colors border border-zinc-600/50"
+              className="flex items-center gap-1 px-3 py-1 bg-zinc-800 hover:bg-zinc-700 rounded text-xs transition-colors"
             >
-              <Pause className="w-4 h-4" />
+              <Pause className="w-3 h-3" />
               Pause
             </button>
           ) : (
             <button
               onClick={startGame}
-              className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-md text-sm transition-colors border border-zinc-600/50"
+              className="flex items-center gap-1 px-3 py-1 bg-zinc-800 hover:bg-zinc-700 rounded text-xs transition-colors"
             >
-              <Play className="w-4 h-4" />
+              <Play className="w-3 h-3" />
               Resume
             </button>
           )}
           
           <button
             onClick={resetGame}
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-md text-sm transition-colors border border-zinc-600/50"
+            className="flex items-center gap-1 px-3 py-1 bg-zinc-800 hover:bg-zinc-700 rounded text-xs transition-colors"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3 h-3" />
             Reset
           </button>
         </div>
 
         {gameState === 'gameOver' && (
-          <div className="text-center text-sm text-red-400 mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-md">
-            <div className="font-semibold">Game Over!</div>
-            <div className="text-xs text-gray-400 mt-1">Final Score: {score}</div>
+          <div className="text-center text-xs text-red-400 mb-3 p-2 bg-red-500/10 border border-red-500/20 rounded">
+            <div className="font-medium">Game Over!</div>
+            <div className="text-gray-400 mt-0.5">Score: {score}</div>
           </div>
         )}
 
         {gameState === 'paused' && (
-          <div className="text-center text-sm text-yellow-400 mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
-            <div className="font-semibold">Game Paused</div>
-            <div className="text-xs text-gray-400 mt-1">Click Resume to continue</div>
+          <div className="text-center text-xs text-yellow-400 mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
+            <div className="font-medium">Paused</div>
           </div>
         )}
 
-        <div className="text-xs text-gray-400 text-center space-y-1">
-          <div>Desktop: Use arrow keys or WASD</div>
-          <div>Mobile: Swipe on the game board</div>
+        <div className="text-xs text-gray-400 text-center">
+          <div>Desktop: Arrow keys • Mobile: Swipe</div>
         </div>
       </div>
     </div>
   );
-}
+               }
