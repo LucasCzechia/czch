@@ -76,7 +76,7 @@ export default function MusicPlayer({ onAudioStateChange }) {
     audio.addEventListener('error', handleError);
     audio.addEventListener('loadstart', handleLoadStart);
 
-    // Load the audio
+    // Only load when song changes, not on every render
     audio.load();
 
     return () => {
