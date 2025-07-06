@@ -3,7 +3,7 @@ import MusicPlayer from './MusicPlayer';
 
 export default function ContactPage() {
   return (
-    <div className="p-4">
+    <div className="p-4 animate-slide-up">
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-gray-400">
           <svg className="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
