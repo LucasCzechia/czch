@@ -85,8 +85,23 @@ body {
   }
 }
 
+@keyframes slide-down {
+  0% {
+    opacity: 1;
+    transform: translateY(-50%) translateY(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateY(12px);
+  }
+}
+
 .animate-bounce-slide {
   animation: bounce-slide 0.6s ease-out;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-in;
 }
 
 * {
