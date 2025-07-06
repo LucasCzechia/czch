@@ -1,65 +1,110 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, X, Download, Share2, Check } from 'lucide-react';
 
-const MUSIC_CONFIG = {
-  title: 'пачка сигарет - instrumental',
-  artist: 'operra, verana',
-  audioSrc: '/assets/audio.mp3',
-  thumbnailSrc: '/assets/thumbnail.png',
-  spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw',
-  defaultVolume: 50
-};
+const PLAYLIST = [
+  {
+    title: 'пачка сигарет - instrumental',
+    artist: 'operra, verana',
+    folder: 'pachka-sigaret',
+    spotifyUrl: 'https://open.spotify.com/track/6pBMgg8fbrhNjUTVWbearS?si=U-G2Lw0PRDeTAzWNAj51Dw'
+  }
+];
 
 export default function MusicPlayer() {
+  const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(MUSIC_CONFIG.defaultVolume);
+  const [volume, setVolume] = useState(50);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showCopiedNotification, setShowCopiedNotification] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const audioRef = useRef(null);
+
+  const currentSong = PLAYLIST[currentSongIndex];
+  const audioSrc = `/assets/audio/${currentSong.folder}/${currentSong.folder}.mp3`;
+  const thumbnailSrc = `/assets/audio/${currentSong.folder}/thumbnail.png`;
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const updateTime = () => setCurrentTime(audio.currentTime);
-    const handleEnded = () => setIsPlaying(false);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      playNextSong();
+    };
     const handleLoadedMetadata = () => {
       setDuration(audio.duration);
       setIsLoaded(true);
+      setLoadError(false);
     };
-    const handleCanPlay = () => setIsLoaded(true);
+    const handleCanPlay = () => {
+      setIsLoaded(true);
+      setLoadError(false);
+    };
+    const handleError = () => {
+      setLoadError(true);
+      setIsLoaded(false);
+    };
+    const handleLoadStart = () => {
+      setIsLoaded(false);
+      setLoadError(false);
+    };
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('error', handleError);
+    audio.addEventListener('loadstart', handleLoadStart);
 
     audio.volume = volume / 100;
+    audio.load();
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('error', handleError);
+      audio.removeEventListener('loadstart', handleLoadStart);
     };
-  }, [volume]);
+  }, [volume, currentSongIndex]);
+
+  const playNextSong = () => {
+    const nextIndex = (currentSongIndex + 1) % PLAYLIST.length;
+    setCurrentSongIndex(nextIndex);
+    setCurrentTime(0);
+  };
+
+  const playPrevSong = () => {
+    if (currentTime > 3) {
+      audioRef.current.currentTime = 0;
+      setCurrentTime(0);
+    } else {
+      const prevIndex = currentSongIndex === 0 ? PLAYLIST.length - 1 : currentSongIndex - 1;
+      setCurrentSongIndex(prevIndex);
+      setCurrentTime(0);
+    }
+  };
 
   const togglePlay = async () => {
     const audio = audioRef.current;
-    if (!audio || !isLoaded) return;
+    if (!audio || !isLoaded || loadError) return;
 
     try {
       if (isPlaying) {
         audio.pause();
+        setIsPlaying(false);
       } else {
         await audio.play();
+        setIsPlaying(true);
       }
-      setIsPlaying(!isPlaying);
     } catch (error) {
       console.error('Error playing audio:', error);
+      setLoadError(true);
     }
   };
 
@@ -73,25 +118,13 @@ export default function MusicPlayer() {
 
   const handleProgressClick = (e) => {
     const audio = audioRef.current;
-    if (!audio || !isLoaded) return;
+    if (!audio || !isLoaded || loadError) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const newTime = (clickX / rect.width) * duration;
     audio.currentTime = newTime;
     setCurrentTime(newTime);
-  };
-
-  const skipBackward = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = Math.max(0, audio.currentTime - 10);
-  };
-
-  const skipForward = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = Math.min(duration, audio.currentTime + 10);
   };
 
   const formatTime = (seconds) => {
@@ -113,8 +146,8 @@ export default function MusicPlayer() {
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = MUSIC_CONFIG.audioSrc;
-    link.download = `${MUSIC_CONFIG.artist} - ${MUSIC_CONFIG.title}.mp3`;
+    link.href = audioSrc;
+    link.download = `${currentSong.artist} - ${currentSong.title}.mp3`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -122,7 +155,7 @@ export default function MusicPlayer() {
 
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(MUSIC_CONFIG.spotifyUrl);
+      await navigator.clipboard.writeText(currentSong.spotifyUrl);
       setShowCopiedNotification(true);
       
       setTimeout(() => {
@@ -145,7 +178,7 @@ export default function MusicPlayer() {
           <div className="flex items-center gap-2" onClick={() => setShowModal(true)}>
             <div className="cursor-pointer">
               <img 
-                src={MUSIC_CONFIG.thumbnailSrc}
+                src={thumbnailSrc}
                 alt="Album Cover" 
                 className="w-7 h-7 rounded"
                 onError={(e) => {
@@ -155,34 +188,39 @@ export default function MusicPlayer() {
             </div>
             <div className="flex-1 cursor-pointer group">
               <h3 className="text-xs font-medium text-gray-300 group-hover:text-white transition-colors">
-                {MUSIC_CONFIG.title}
+                {currentSong.title}
               </h3>
               <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-                {MUSIC_CONFIG.artist}
+                {currentSong.artist}
               </p>
             </div>
+            {PLAYLIST.length > 1 && (
+              <div className="text-xs text-gray-500">
+                {currentSongIndex + 1}/{PLAYLIST.length}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <button 
-                onClick={skipBackward}
+                onClick={playPrevSong}
                 className="text-gray-500 hover:text-white transition-colors"
-                disabled={!isLoaded}
+                disabled={loadError}
               >
                 <SkipBack size={14} />
               </button>
               <button 
                 onClick={togglePlay}
                 className="text-white hover:text-gray-200 transition-colors disabled:opacity-50"
-                disabled={!isLoaded}
+                disabled={!isLoaded || loadError}
               >
                 {isPlaying ? <Pause size={16} /> : <Play size={16} />}
               </button>
               <button 
-                onClick={skipForward}
+                onClick={playNextSong}
                 className="text-gray-500 hover:text-white transition-colors"
-                disabled={!isLoaded}
+                disabled={loadError}
               >
                 <SkipForward size={14} />
               </button>
@@ -222,12 +260,15 @@ export default function MusicPlayer() {
               <span className="text-xs text-gray-500">{formatTime(currentTime)}</span>
               <span className="text-xs text-gray-500">{formatTime(duration)}</span>
             </div>
+            {loadError && (
+              <div className="text-xs text-red-400 mt-1">Failed to load audio</div>
+            )}
           </div>
 
           <audio 
             ref={audioRef}
             preload="metadata"
-            src={MUSIC_CONFIG.audioSrc}
+            src={audioSrc}
           />
         </div>
       </div>
@@ -244,8 +285,8 @@ export default function MusicPlayer() {
             <div className="flex gap-4 items-start pt-2">
               <div className="cursor-pointer">
                 <img 
-                  src={MUSIC_CONFIG.thumbnailSrc}
-                  alt={MUSIC_CONFIG.title}
+                  src={thumbnailSrc}
+                  alt={currentSong.title}
                   className="w-14 h-14 rounded"
                   onError={(e) => {
                     e.target.src = 'https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fdd82ac29';
@@ -253,8 +294,8 @@ export default function MusicPlayer() {
                 />
               </div>
               <div className="flex-1">
-                <h3 className="text-sm font-medium">{MUSIC_CONFIG.title}</h3>
-                <p className="text-xs text-gray-400">{MUSIC_CONFIG.artist}</p>
+                <h3 className="text-sm font-medium">{currentSong.title}</h3>
+                <p className="text-xs text-gray-400">{currentSong.artist}</p>
                 <p className="text-xs text-gray-500 mb-3">{formatDuration(duration)}</p>
                 <div className="flex gap-4">
                   <button 
@@ -274,6 +315,34 @@ export default function MusicPlayer() {
                 </div>
               </div>
             </div>
+
+            {PLAYLIST.length > 1 && (
+              <div className="mt-4 pt-3 border-t border-zinc-800/30">
+                <div className="text-xs text-gray-400 mb-2">Playlist ({PLAYLIST.length} songs)</div>
+                <div className="space-y-1 max-h-32 overflow-y-auto">
+                  {PLAYLIST.map((song, index) => (
+                    <div 
+                      key={index}
+                      className={`flex items-center gap-2 p-1 rounded text-xs cursor-pointer transition-colors ${
+                        index === currentSongIndex 
+                          ? 'bg-zinc-800/50 text-white' 
+                          : 'text-gray-400 hover:text-white hover:bg-zinc-800/30'
+                      }`}
+                      onClick={() => {
+                        setCurrentSongIndex(index);
+                        setCurrentTime(0);
+                      }}
+                    >
+                      <span className="w-4 text-center">{index + 1}</span>
+                      <div className="flex-1 truncate">
+                        <div className="truncate">{song.title}</div>
+                        <div className="truncate text-gray-500">{song.artist}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
