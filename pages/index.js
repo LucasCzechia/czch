@@ -25,9 +25,14 @@ const Terminal = dynamic(() => import('../components/Terminal'), {
   ssr: false
 });
 
+const SnakeGame = dynamic(() => import('../components/SnakeGame'), {
+  ssr: false
+});
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [snakeOpen, setSnakeOpen] = useState(false);
 
   return (
     <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6" style={{ alignItems: 'center', transform: 'translateY(-2rem)' }}>
@@ -82,7 +87,15 @@ export default function Home() {
         </div>
       </div>
       
-      <Terminal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
+      <Terminal 
+        isOpen={terminalOpen} 
+        onClose={() => setTerminalOpen(false)}
+        onOpenSnake={() => setSnakeOpen(true)}
+      />
+      <SnakeGame 
+        isOpen={snakeOpen}
+        onClose={() => setSnakeOpen(false)}
+      />
     </div>
   );
 }
