@@ -67,14 +67,12 @@ export default function DiscordStatus({ userId }) {
   };
 
   const getActivityThumbnail = (activity) => {
-    // First check if Discord provides assets
     if (activity?.application_id && activity?.assets?.large_image) {
       return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
     }
     
-    // Fallback to platform-specific logos
     if (activity?.platform === 'xbox') {
-      return 'https://cdn.discordapp.com/attachments/1319298904096772197/1391377786220052591/pngimg.com_-_xbox_PNG17529.png?ex=686bad0a&is=686a5b8a&hm=614717fe8bb6117b1090695839a1fd438ed5fafe0c4f1c65c2d0c0555c256950&';
+      return '/assets/xbox.png';
     }
     
     return null;
