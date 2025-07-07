@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { HelpCircle, Minus, X } from 'lucide-react';
 
-export default function Terminal({ isOpen, onClose }) {
+export default function Terminal({ isOpen, onClose, onOpenSnake }) {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([
     { type: 'system', content: 'Terminal v1.0.0 - Type "help" for available commands' }
@@ -11,15 +11,25 @@ export default function Terminal({ isOpen, onClose }) {
   const [position, setPosition] = useState({ x: 20, y: 60 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [terminalClosing, setTerminalClosing] = useState(false);
+
+  const [showTerminal, setShowTerminal] = useState(false);
   const inputRef = useRef(null);
   const historyRef = useRef(null);
   const terminalRef = useRef(null);
 
   useEffect(() => {
-    if (isOpen && !isMinimized && inputRef.current) {
+    if (isOpen && !showTerminal) {
+      setShowTerminal(true);
+      setTerminalClosing(false);
+    }
+  }, [isOpen, showTerminal]);
+
+  useEffect(() => {
+    if (showTerminal && !isMinimized && !terminalClosing && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isOpen, isMinimized]);
+  }, [showTerminal, isMinimized, terminalClosing]);
 
   useEffect(() => {
     if (historyRef.current) {
@@ -217,11 +227,11 @@ export default function Terminal({ isOpen, onClose }) {
         break;
 
       case 'close':
-        onClose();
+        closeTerminal();
         break;
 
       case 'minimize':
-        setIsMinimized(true);
+        minimizeTerminal();
         break;
 
       case 'echo':
@@ -234,7 +244,10 @@ export default function Terminal({ isOpen, onClose }) {
         break;
 
       case 'snake':
-        setHistory(prev => [...prev, { type: 'output', content: '🐍 Snake game coming soon! Use arrow keys when implemented.' }]);
+        setHistory(prev => [...prev, { type: 'output', content: '🐍 Opening Snake game...' }]);
+        if (onOpenSnake) {
+          onOpenSnake();
+        }
         break;
 
       case 'about':
@@ -263,14 +276,28 @@ Type 'help' for commands`
     }
   };
 
-  if (!isOpen) return null;
+  const closeTerminal = () => {
+    setTerminalClosing(true);
+    setTimeout(() => {
+      setShowTerminal(false);
+      onClose();
+    }, 300);
+  };
+
+  const minimizeTerminal = () => {
+    setIsMinimized(!isMinimized);
+  };
+
+  if (!showTerminal) return null;
 
   const theme = getTerminalTheme(terminalColor);
 
   return (
     <div 
       ref={terminalRef}
-      className={`absolute overflow-hidden rounded-md border shadow-lg z-50 ${theme.border} ${theme.text}`}
+      className={`absolute overflow-hidden rounded-md border shadow-lg z-50 ${theme.border} ${theme.text} ${
+        terminalClosing ? 'animate-terminal-close' : 'animate-terminal-open'
+      }`}
       style={{
         width: '90%',
         maxWidth: '350px',
@@ -294,7 +321,7 @@ Type 'help' for commands`
           <button 
             onClick={(e) => {
               e.stopPropagation();
-              setIsMinimized(!isMinimized);
+              minimizeTerminal();
             }}
             className={`transition-colors p-0.5 ${terminalColor === 'white' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-400 hover:text-gray-200'}`}
           >
@@ -303,7 +330,7 @@ Type 'help' for commands`
           <button 
             onClick={(e) => {
               e.stopPropagation();
-              onClose();
+              closeTerminal();
             }}
             className={`transition-colors p-0.5 ${terminalColor === 'white' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-400 hover:text-gray-200'}`}
           >

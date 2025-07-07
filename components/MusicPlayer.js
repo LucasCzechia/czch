@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, X, Download, Share2, Check } from 'lucide-react';
 
-export default function MusicPlayer() {
+export default function MusicPlayer({ onAudioStateChange }) {
   const PLAYLIST = [
     {
       title: 'пачка сигарет - instrumental',
@@ -27,6 +27,19 @@ export default function MusicPlayer() {
   const currentSong = PLAYLIST[currentSongIndex] || PLAYLIST[0];
   const audioSrc = `/assets/audio/${currentSong.folder}/${currentSong.folder}.mp3`;
   const thumbnailSrc = `/assets/audio/${currentSong.folder}/thumbnail.png`;
+
+  // Notify parent component of audio state changes
+  useEffect(() => {
+    if (onAudioStateChange) {
+      onAudioStateChange({
+        isPlaying,
+        audioElement: audioRef.current,
+        currentTime,
+        duration,
+        volume
+      });
+    }
+  }, [isPlaying, currentTime, duration, volume, onAudioStateChange]);
 
   // Handle song loading and event listeners
   useEffect(() => {
@@ -63,7 +76,7 @@ export default function MusicPlayer() {
     audio.addEventListener('error', handleError);
     audio.addEventListener('loadstart', handleLoadStart);
 
-    // Only load the audio when song changes, not when volume changes
+    // Only load when song changes, not on every render
     audio.load();
 
     return () => {
@@ -74,7 +87,7 @@ export default function MusicPlayer() {
       audio.removeEventListener('error', handleError);
       audio.removeEventListener('loadstart', handleLoadStart);
     };
-  }, [currentSongIndex]); // Only depend on currentSongIndex
+  }, [currentSongIndex]);
 
   // Handle volume changes separately
   useEffect(() => {

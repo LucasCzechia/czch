@@ -17,17 +17,40 @@ const ContactPage = dynamic(() => import('../components/ContactPage'), {
   ssr: false
 });
 
+const ProjectsPage = dynamic(() => import('../components/ProjectsPage'), {
+  ssr: false
+});
+
 const Terminal = dynamic(() => import('../components/Terminal'), {
+  ssr: false
+});
+
+const SnakeGame = dynamic(() => import('../components/SnakeGame'), {
   ssr: false
 });
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [snakeOpen, setSnakeOpen] = useState(false);
+  const [audioState, setAudioState] = useState({
+    isPlaying: false,
+    audioElement: null,
+    currentTime: 0,
+    duration: 0,
+    volume: 50
+  });
+
+  const handleAudioStateChange = (newAudioState) => {
+    setAudioState(newAudioState);
+  };
 
   return (
     <div className="h-screen w-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-6" style={{ alignItems: 'center', transform: 'translateY(-2rem)' }}>
-      <ParticleBackground />
+      <ParticleBackground 
+        isPlaying={audioState.isPlaying} 
+        audioElement={audioState.audioElement}
+      />
       
       <div className="w-full max-w-md glass-card overflow-visible relative z-10">
         <div className="flex justify-between p-2 border-b border-zinc-800/30">
@@ -59,7 +82,7 @@ export default function Home() {
           </button>
         </div>
         
-        <div className="p-4" style={{ display: activeTab === 'home' ? 'block' : 'none' }}>
+        <div className="pt-4 px-4" style={{ display: activeTab === 'home' ? 'block' : 'none' }}>
           <div className="mb-6">
             <h1 className="font-proggy mb-0">czch</h1>
             <p className="text-gray-400 text-xs leading-none">
@@ -67,19 +90,26 @@ export default function Home() {
             </p>
           </div>
           <DiscordStatus userId="1146944562951106721" />
-          <MusicPlayer />
         </div>
         
-        {activeTab === 'projects' && (
-          <div className="p-4 animate-slide-up">
-            <div className="text-gray-400 text-xs">Projects coming soon...</div>
-          </div>
-        )}
+        {activeTab === 'projects' && <ProjectsPage />}
         
         {activeTab === 'contact' && <ContactPage />}
+        
+        <div className="px-4 pb-4">
+          <MusicPlayer onAudioStateChange={handleAudioStateChange} />
+        </div>
       </div>
       
-      <Terminal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
+      <Terminal 
+        isOpen={terminalOpen} 
+        onClose={() => setTerminalOpen(false)}
+        onOpenSnake={() => setSnakeOpen(true)}
+      />
+      <SnakeGame 
+        isOpen={snakeOpen}
+        onClose={() => setSnakeOpen(false)}
+      />
     </div>
   );
 }
