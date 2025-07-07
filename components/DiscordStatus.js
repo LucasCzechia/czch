@@ -166,13 +166,13 @@ export default function DiscordStatus({ userId }) {
         )}
       </div>
 
-      {(discordData?.listening_to_spotify || discordData?.activities?.find(a => a.name === 'Spotify') || discordData?.activities?.filter(activity => activity.type === 0).length > 0) && (
+      {(discordData?.listening_to_spotify || discordData?.activities?.filter(activity => activity.type === 0).length > 0) && (
         <div className="mt-2 space-y-2">
-          {(discordData?.listening_to_spotify || discordData?.activities?.find(a => a.name === 'Spotify')) && (
+          {discordData?.listening_to_spotify && (
             <div className="flex items-center gap-2">
               <div className="relative">
                 <img 
-                  src={discordData.spotify?.album_art_url || discordData?.activities?.find(a => a.name === 'Spotify')?.assets?.large_image ? `https://cdn.discordapp.com/app-assets/${discordData?.activities?.find(a => a.name === 'Spotify')?.application_id}/${discordData?.activities?.find(a => a.name === 'Spotify')?.assets?.large_image}.png` : "https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fdd82ac29"}
+                  src={discordData.spotify?.album_art_url || "https://i.scdn.co/image/ab67616d0000b273e5a25ed08d1e7e0fdd82ac29"}
                   alt="Album Art" 
                   className="w-7 h-7 rounded-sm"
                 />
@@ -185,27 +185,25 @@ export default function DiscordStatus({ userId }) {
                     rel="noopener noreferrer" 
                     className="text-gray-400 hover:text-green-400 transition-colors"
                   >
-                    {discordData.spotify?.song || discordData?.activities?.find(a => a.name === 'Spotify')?.details || 'Loading...'}
-                  </a> • {discordData.spotify?.artist || discordData?.activities?.find(a => a.name === 'Spotify')?.state || 'Artist'}
+                    {discordData.spotify?.song || 'Loading...'}
+                  </a> • {discordData.spotify?.artist || 'Artist'}
                 </div>
-                {discordData.spotify?.timestamps && (
-                  <div className="flex items-center gap-1 mt-1">
-                    <span className="text-[0.7rem] text-gray-500">
-                      {formatTime((currentTime - discordData.spotify.timestamps.start) / 1000)}
-                    </span>
-                    <div className="flex-1 bg-gray-800 rounded-full h-1">
-                      <div 
-                        className="bg-green-500 h-1 rounded-full" 
-                        style={{
-                          width: `${Math.min(100, Math.max(0, ((currentTime - discordData.spotify.timestamps.start) / (discordData.spotify.timestamps.end - discordData.spotify.timestamps.start)) * 100))}%`
-                        }}
-                      ></div>
-                    </div>
-                    <span className="text-[0.7rem] text-gray-500">
-                      {formatTime((discordData.spotify.timestamps.end - discordData.spotify.timestamps.start) / 1000)}
-                    </span>
+                <div className="flex items-center gap-1 mt-1">
+                  <span className="text-[0.7rem] text-gray-500">
+                    {formatTime((currentTime - discordData.spotify?.timestamps?.start) / 1000)}
+                  </span>
+                  <div className="flex-1 bg-gray-800 rounded-full h-1">
+                    <div 
+                      className="bg-green-500 h-1 rounded-full" 
+                      style={{
+                        width: `${Math.min(100, Math.max(0, ((currentTime - discordData.spotify?.timestamps?.start) / (discordData.spotify?.timestamps?.end - discordData.spotify?.timestamps?.start)) * 100))}%`
+                      }}
+                    ></div>
                   </div>
-                )}
+                  <span className="text-[0.7rem] text-gray-500">
+                    {formatTime((discordData.spotify?.timestamps?.end - discordData.spotify?.timestamps?.start) / 1000)}
+                  </span>
+                </div>
               </div>
             </div>
           )}
